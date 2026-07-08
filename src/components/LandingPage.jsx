@@ -47,8 +47,8 @@ function Hero() {
       {/* Ambient AI glow */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-40 right-[-10%] h-[520px] w-[520px] rounded-full opacity-40 blur-[120px]"
-        style={{ background: "var(--tp-ai-gradient)" }}
+        className="pointer-events-none absolute -top-40 right-[-10%] h-[520px] w-[520px] rounded-full opacity-10 blur-[120px]"
+        style={{ background: "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%)" }}
       />
       <div
         aria-hidden="true"
@@ -66,11 +66,11 @@ function Hero() {
           <motion.a
             variants={fadeUpItem}
             href="#ai"
-            className="tp-ai-border inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-medium text-tp-foreground"
+            className="inline-flex items-center gap-2 rounded-full border border-tp-border-strong bg-tp-surface/30 px-3.5 py-1.5 text-xs font-medium text-tp-foreground shadow-sm backdrop-blur-md transition-colors hover:bg-tp-surface/60"
           >
-            <Sparkles className="h-3.5 w-3.5 text-tp-ai-to" />
-            <span className="tp-ai-text font-semibold">New</span>
-            <span className="text-tp-muted">AI priority scoring for every task</span>
+            <Sparkles className="h-3.5 w-3.5 text-tp-text" />
+            <span className="font-semibold text-tp-text">New</span>
+            <span className="text-tp-muted">Priority scoring for every task</span>
           </motion.a>
 
           {/* Headline */}
@@ -80,7 +80,7 @@ function Hero() {
           >
             Task management that
             <br className="hidden sm:block" /> thinks{" "}
-            <span className="tp-ai-text">a step ahead</span>.
+            <span className="bg-gradient-to-br from-white to-neutral-500 bg-clip-text text-transparent drop-shadow-sm">a step ahead</span>.
           </motion.h1>
 
           {/* Subtitle */}
@@ -271,19 +271,19 @@ function AIShowcase() {
     <section id="ai" className="relative overflow-hidden py-24">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20 blur-[130px]"
-        style={{ background: "var(--tp-ai-gradient)" }}
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-5 blur-[130px]"
+        style={{ background: "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%)" }}
       />
 
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
         <div>
-          <span className="tp-ai-border inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold text-tp-foreground">
-            <Sparkles className="h-3.5 w-3.5 text-tp-ai-to" />
-            <span className="tp-ai-text">TaskPulse AI</span>
+          <span className="inline-flex items-center gap-2 rounded-full border border-tp-border-strong bg-tp-surface/30 px-3 py-1 text-xs font-semibold text-tp-foreground shadow-sm backdrop-blur-md">
+            <Sparkles className="h-3.5 w-3.5 text-tp-text" />
+            <span className="text-tp-text">TaskPulse Intelligence</span>
           </span>
           <h2 className="mt-5 text-balance text-3xl font-semibold tracking-tight text-tp-foreground sm:text-4xl">
             The layer that decides{" "}
-            <span className="tp-ai-text">what matters next</span>
+            <span className="bg-gradient-to-br from-white to-neutral-500 bg-clip-text text-transparent">what matters next</span>
           </h2>
           <p className="mt-4 text-pretty text-lg leading-relaxed text-tp-muted">
             TaskPulse reads the signals your team creates and turns them into a
@@ -293,7 +293,7 @@ function AIShowcase() {
           <div className="mt-8 flex flex-col gap-5">
             {capabilities.map((c) => (
               <div key={c.title} className="flex gap-4">
-                <span className="tp-ai-surface grid h-10 w-10 shrink-0 place-items-center rounded-lg">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-tp-border bg-tp-surface text-tp-foreground shadow-sm">
                   <c.icon className="h-5 w-5" />
                 </span>
                 <div>
