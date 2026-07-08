@@ -7,58 +7,6 @@
 
 /* ─── Design Tokens ───────────────────────────────────────────────────── */
 :root {
-  /* Backgrounds */
-  --tp-bg:              #09090b;
-  --tp-sidebar-bg:      #0c0c0e;
-  --tp-surface:         #141416;
-  --tp-surface-hover:   #1a1a1e;
-  --tp-surface-active:  #1f1f24;
-  --tp-surface-raised:  #1e1e22;
-
-  /* Borders */
-  --tp-border:          #27272a;
-  --tp-border-subtle:   #1e1e22;
-  --tp-border-strong:   #3f3f46;
-
-  /* Text */
-  --tp-text:            #fafafa;
-  --tp-text-secondary:  #a1a1aa;
-  --tp-text-muted:      #52525b;
-  --tp-text-dim:        #3f3f46;
-
-  /* Accent */
-  --tp-accent:          #6366f1;
-  --tp-accent-hover:    #818cf8;
-  --tp-accent-muted:    rgba(99, 102, 241, 0.15);
-  --tp-accent-subtle:   rgba(99, 102, 241, 0.08);
-
-  /* Status Colors */
-  --tp-status-todo:        #71717a;
-  --tp-status-in-progress: #f59e0b;
-  --tp-status-review:      #3b82f6;
-  --tp-status-done:        #22c55e;
-  --tp-status-backlog:     #52525b;
-  --tp-status-cancelled:   #ef4444;
-
-  /* Priority Colors */
-  --tp-priority-urgent:  #ef4444;
-  --tp-priority-high:    #f97316;
-  --tp-priority-medium:  #f59e0b;
-  --tp-priority-low:     #6366f1;
-  --tp-priority-none:    #52525b;
-
-  /* AI Feature */
-  --tp-ai:              #a855f7;
-  --tp-ai-hover:        #c084fc;
-  --tp-ai-muted:        rgba(168, 85, 247, 0.12);
-  --tp-ai-subtle:       rgba(168, 85, 247, 0.06);
-
-  /* Semantic */
-  --tp-success:         #22c55e;
-  --tp-warning:         #f59e0b;
-  --tp-error:           #ef4444;
-  --tp-info:            #3b82f6;
-
   /* Typography */
   --tp-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
@@ -71,19 +19,6 @@
   --tp-transition-fast: 0.12s ease;
   --tp-transition: 0.2s ease;
   --tp-transition-slow: 0.3s ease;
-
-  /* Shadows */
-  --tp-shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
-  --tp-shadow-md: 0 4px 12px rgba(0,0,0,0.5);
-  --tp-shadow-lg: 0 8px 24px rgba(0,0,0,0.6);
-  --tp-shadow-overlay: 0 16px 48px rgba(0,0,0,0.7);
-
-  /* Border radius */
-  --tp-radius-sm: 4px;
-  --tp-radius: 6px;
-  --tp-radius-md: 8px;
-  --tp-radius-lg: 12px;
-  --tp-radius-xl: 16px;
 }
 
 
@@ -2316,10 +2251,34 @@
 }
 
 .tp-detail-panel-desc {
+  width: 100%;
   font-size: 13px;
   color: var(--tp-text-secondary);
   line-height: 1.6;
   margin: 0 0 24px 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--tp-radius-md);
+  padding: 8px 10px;
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  transition: all var(--tp-transition-fast);
+  font-family: inherit;
+}
+
+.tp-detail-panel-desc:hover {
+  background: var(--tp-surface-hover);
+}
+
+.tp-detail-panel-desc:focus {
+  background: var(--tp-surface-active);
+  border-color: var(--tp-border);
+  color: var(--tp-text);
+}
+
+.tp-detail-panel-desc::placeholder {
+  color: var(--tp-text-muted);
 }
 
 .tp-detail-panel-props {
