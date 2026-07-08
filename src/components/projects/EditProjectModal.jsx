@@ -74,7 +74,7 @@ export default function EditProjectModal({ project, onClose, onSubmit }) {
     const submitData = {
       ...formData,
       lead: formData.leadId || undefined,
-      members: formData.memberIds
+      members: formData.memberIds.map(id => ({ user: id, role: 'member' }))
     };
     
     delete submitData.leadId;
