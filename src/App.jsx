@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import "./index.css"
+import "./styles/dashboard.css"
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { WorkspaceProvider } from "./context/WorkspaceContext";
 import { CommandPaletteProvider } from "./context/CommandPaletteContext";
