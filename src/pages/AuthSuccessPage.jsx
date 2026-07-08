@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+import api from '../api/client';
+
 export default function AuthSuccessPage() {
   const [searchParams] = useSearchParams();
   const { handleOAuthSuccess } = useAuth();
@@ -22,9 +24,26 @@ export default function AuthSuccessPage() {
         
         handleOAuthSuccess(token, user);
         
-        setTimeout(() => {
-            window.location.href = '/dashboard';
-        }, 1000);
+        // Check for pending invite token and auto-accept
+        const inviteToken = sessionStorage.getItem('tp-invite-token');
+        if (inviteToken) {
+          const acceptInvite = async () => {
+            try {
+              const { data } = await api.post(`/invites/${inviteToken}/accept`);
+              sessionStorage.removeItem('tp-invite-token');
+              window.location.href = `/dashboard/${data.project.workspaceId}/projects/${data.project._id}`;
+            } catch (err) {
+              console.error('Failed to auto-accept invite after OAuth', err);
+              sessionStorage.removeItem('tp-invite-token');
+              window.location.href = '/dashboard';
+            }
+          };
+          setTimeout(() => acceptInvite(), 500);
+        } else {
+          setTimeout(() => {
+              window.location.href = '/dashboard';
+          }, 1000);
+        }
         
       } catch (e) {
         console.error('Failed to parse user from OAuth callback', e);

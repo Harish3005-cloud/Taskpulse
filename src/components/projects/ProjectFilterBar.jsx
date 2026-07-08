@@ -85,45 +85,7 @@ export function ProjectFilterBar({ filters, updateFilter, resetFilters, members 
         </Select>
       </div>
 
-      {/* Date Range Filters */}
-      <div className="flex gap-2 w-auto">
-        <div className="flex flex-col gap-1.5 w-[140px]">
-          <label className="text-xs font-medium text-muted-foreground">From Date</label>
-          <Popover>
-            <PopoverTrigger className={buttonVariants({ variant: "outline", className: `w-full justify-start text-left font-normal ${!filters.dateFrom ? "text-muted-foreground" : ""}` })}>
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {filters.dateFrom ? format(filters.dateFrom, "PPP") : <span>Pick a date</span>}
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={filters.dateFrom}
-                onSelect={(val) => updateFilter('dateFrom', val)}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
 
-        <div className="flex flex-col gap-1.5 w-[140px]">
-          <label className="text-xs font-medium text-muted-foreground">To Date</label>
-          <Popover>
-            <PopoverTrigger className={buttonVariants({ variant: "outline", className: `w-full justify-start text-left font-normal ${!filters.dateTo ? "text-muted-foreground" : ""}` })}>
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {filters.dateTo ? format(filters.dateTo, "PPP") : <span>Pick a date</span>}
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={filters.dateTo}
-                onSelect={(val) => updateFilter('dateTo', val)}
-                initialFocus
-                disabled={(date) => filters.dateFrom && date < filters.dateFrom}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-      </div>
 
       {/* Clear All Button */}
       {hasActiveFilters && (

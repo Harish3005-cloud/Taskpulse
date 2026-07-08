@@ -11,6 +11,11 @@ export function WorkspaceProvider({ children }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const triggerRefresh = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
 
   // Saved custom views (persisted to localStorage)
   const [savedViews, setSavedViews] = useState(() => {
@@ -92,7 +97,7 @@ export function WorkspaceProvider({ children }) {
       fetchTasks(activeWorkspace._id);
       fetchNotifications(activeWorkspace._id);
     }
-  }, [activeWorkspace, fetchTasks, fetchNotifications]);
+  }, [activeWorkspace, fetchTasks, fetchNotifications, refreshTrigger]);
 
   const getWorkspaceTasks = useCallback((workspaceId) => {
     return tasks.filter(t => t.workspaceId === (workspaceId || activeWorkspace?._id));
@@ -149,6 +154,8 @@ export function WorkspaceProvider({ children }) {
       savedViews,
       addView,
       deleteView,
+      refreshTrigger,
+      triggerRefresh,
     }}>
       {children}
     </WorkspaceContext.Provider>

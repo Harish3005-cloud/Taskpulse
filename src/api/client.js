@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api/v1',
+  baseURL: 'https://taskpulseserverdesign-production.up.railway.app/api/v1',
   withCredentials: true, // Send cookies with requests
   headers: {
     'Content-Type': 'application/json'
@@ -25,7 +25,7 @@ api.interceptors.response.use(
       sessionStorage.removeItem('accessToken');
       sessionStorage.removeItem('user');
       // Only redirect if not already on login/landing page
-      if (!['/login', '/signup', '/'].includes(window.location.pathname)) {
+      if (!['/login', '/signup', '/'].includes(window.location.pathname) && !window.location.pathname.startsWith('/invite')) {
         window.location.href = '/login';
       }
     }

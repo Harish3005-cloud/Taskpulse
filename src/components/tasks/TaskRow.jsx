@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TaskStatusBadge from './TaskStatusBadge';
 import TaskPriorityBadge from './TaskPriorityBadge';
@@ -7,7 +8,7 @@ import Avatar from '../shared/Avatar';
  * TaskRow — single task row in the list, matching Linear's issue row.
  * Supports multi-select checkbox and detail panel preview.
  */
-export default function TaskRow({ task, isSelected, onToggleSelect, onPreview, anySelected }) {
+const TaskRow = memo(function TaskRow({ task, isSelected, onToggleSelect, onPreview, anySelected }) {
   const navigate = useNavigate();
 
   const formatDate = (dateStr) => {
@@ -87,4 +88,6 @@ export default function TaskRow({ task, isSelected, onToggleSelect, onPreview, a
       </span>
     </div>
   );
-}
+});
+
+export default TaskRow;

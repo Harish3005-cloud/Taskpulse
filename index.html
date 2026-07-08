@@ -4,7 +4,25 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sample-design</title>
+    <meta name="theme-color" content="#09090b" />
+    <meta
+      name="description"
+      content="TaskPulse — AI-powered task management that scores priority, drafts your day, and keeps every team in sync."
+    />
+    <title>TaskPulse — AI task management for high-velocity teams</title>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("taskpulse-theme") || "dark";
+          var d =
+            t === "dark" ||
+            (t === "system" &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.classList.toggle("dark", d);
+          document.documentElement.style.colorScheme = d ? "dark" : "light";
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

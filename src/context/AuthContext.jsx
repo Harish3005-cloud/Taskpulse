@@ -12,12 +12,26 @@ export function AuthProvider({ children }) {
 
   const isAuthenticated = !!user;
 
-  const login = async (email, name) => {
+  const login = async (email, password) => {
     setLoading(true);
     try {
-      const { data } = await api.post('/auth/google/callback', { email, name });
+      const { data } = await api.post('/auth/login', { email, password });
       
-      // Store access token in sessionStorage (not localStorage for security)
+      sessionStorage.setItem('accessToken', data.accessToken);
+      sessionStorage.setItem('user', JSON.stringify(data.user));
+      setUser(data.user);
+      
+      return data;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const register = async (name, email, password) => {
+    setLoading(true);
+    try {
+      const { data } = await api.post('/auth/register', { name, email, password });
+      
       sessionStorage.setItem('accessToken', data.accessToken);
       sessionStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
@@ -61,7 +75,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, logout, fetchMe, handleOAuthSuccess }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, loading, login, register, logout, fetchMe, handleOAuthSuccess }}>
       {children}
     </AuthContext.Provider>
   );

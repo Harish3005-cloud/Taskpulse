@@ -1,15 +1,42 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import api from '../../api/client';
+import { motion } from 'framer-motion';
+import { Sparkles, Send, AlertTriangle, ArrowRight, Lightbulb, TrendingUp, ShieldAlert } from 'lucide-react';
+import { cn } from '../../lib/utils';
+import Avatar from '../shared/Avatar';
+
+const INITIAL_MESSAGES = [
+  {
+    role: 'ai',
+    content: "Hello! I am TaskPulse AI, your intelligent workspace assistant. How can I help you manage your projects and tasks today?",
+  }
+];
+
+const PROMPT_SUGGESTIONS = [
+  {
+    title: "Task Recommendations",
+    description: "What should I focus on today?",
+    icon: Lightbulb,
+    color: "text-tp-warning"
+  },
+  {
+    title: "Workspace Insights",
+    description: "Summarize our team's performance",
+    icon: TrendingUp,
+    color: "text-tp-success"
+  },
+  {
+    title: "Risk Detection",
+    description: "Are any of our projects falling behind?",
+    icon: ShieldAlert,
+    color: "text-tp-danger"
+  }
+];
 
 export default function AIPage() {
   const { activeWorkspace } = useWorkspace();
-  const [messages, setMessages] = useState([
-    {
-      role: 'ai',
-      content: "Hello! I am TaskPulse AI. How can I help you manage your projects and tasks today?",
-    }
-  ]);
+  const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -22,10 +49,10 @@ export default function AIPage() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+  const handleSend = async (text = input) => {
+    if (!text.trim() || isLoading) return;
 
-    const userMsg = { role: 'user', content: input };
+    const userMsg = { role: 'user', content: text };
     const updatedMessages = [...messages, userMsg];
     setMessages(updatedMessages);
     setInput('');
@@ -52,69 +79,163 @@ export default function AIPage() {
     }
   };
 
-  return (
-    <div className="flex flex-col h-full bg-[var(--bg-base)] text-[var(--text-primary)]">
-      {/* Header */}
-      <div className="flex-none p-6 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]">
-        <h1 className="text-2xl font-bold tracking-tight">TaskPulse AI</h1>
-        <p className="text-[var(--text-muted)] text-sm mt-1">Your intelligent assistant for project management.</p>
-      </div>
+  const renderMessageContent = (content) => {
+    if (content.includes("RISK DETECTED:")) {
+      const [intro, riskText] = content.split("RISK DETECTED:");
+      return (
+        <div className="space-y-4">
+          {intro && <p className="text-sm leading-relaxed">{intro.trim()}</p>}
+          <div className="bg-tp-danger-soft border border-tp-danger/20 rounded-xl p-4 flex gap-3 items-start shadow-sm">
+            <div className="p-2 bg-tp-bg rounded-lg shrink-0">
+              <AlertTriangle className="text-tp-danger" size={20} />
+            </div>
+            <div>
+              <h4 className="font-semibold text-tp-danger-strong text-sm mb-1">Project Risk Identified</h4>
+              <div className="text-sm text-tp-danger-strong/90 leading-relaxed">{riskText.trim()}</div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return <p className="text-sm leading-relaxed whitespace-pre-wrap">{content}</p>;
+  };
 
-      {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        <div className="max-w-4xl mx-auto space-y-6">
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] rounded-2xl p-4 ${
-                msg.role === 'user' 
-                  ? 'bg-[var(--accent)] text-white rounded-br-none' 
-                  : 'bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-bl-none shadow-sm'
-              }`}>
-                {msg.role === 'ai' && (
-                  <div className="flex items-center gap-2 mb-2 font-semibold text-sm text-indigo-500">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
-                    TaskPulse AI
-                  </div>
-                )}
-                <p className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</p>
-              </div>
+  return (
+    <div className="flex flex-col h-full bg-tp-bg text-tp-foreground">
+      {/* Header */}
+      <div className="flex-none p-6 border-b border-tp-border bg-tp-surface flex justify-between items-center z-10 relative shadow-sm">
+        <div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-tp-accent/10 flex items-center justify-center">
+              <Sparkles className="text-tp-accent" size={20} />
             </div>
-          ))}
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl rounded-bl-none p-4 shadow-sm flex items-center gap-2">
-                <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-              </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-tp-foreground">TaskPulse AI</h1>
+              <p className="text-tp-muted text-sm mt-0.5">Your intelligent assistant for project management</p>
             </div>
-          )}
-          <div ref={messagesEndRef} />
+          </div>
+        </div>
+        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-tp-bg rounded-full border border-tp-border">
+          <span className="w-2 h-2 rounded-full bg-tp-success animate-pulse"></span>
+          <span className="text-xs font-medium text-tp-muted">AI is online</span>
         </div>
       </div>
 
-      {/* Input Box */}
-      <div className="flex-none p-6 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)]">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative">
-            <input
-              type="text"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSend()}
-              placeholder="Ask me to summarize tasks, prioritize work, or suggest resources..."
-              className="w-full bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-xl py-4 pl-4 pr-12 text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors shadow-sm"
-              disabled={isLoading}
-            />
-            <button
-              onClick={handleSend}
-              disabled={isLoading || !input.trim()}
-              className="absolute right-2 top-2 bottom-2 p-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center"
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-8 relative">
+        <div className="max-w-4xl mx-auto space-y-8">
+          
+          {messages.map((msg, idx) => (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              key={idx} 
+              className={cn(
+                "flex gap-4",
+                msg.role === 'user' ? "flex-row-reverse" : "flex-row"
+              )}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22L11 13M11 13L2 9L22 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            </button>
+              {msg.role === 'ai' ? (
+                <div className="w-8 h-8 rounded-full bg-tp-accent flex items-center justify-center shrink-0 shadow-tp-sm">
+                  <Sparkles size={14} className="text-white" />
+                </div>
+              ) : (
+                <div className="shrink-0">
+                  <Avatar name="User" size={32} />
+                </div>
+              )}
+              
+              <div className={cn(
+                "max-w-[80%] rounded-2xl p-5",
+                msg.role === 'user' 
+                  ? "bg-tp-accent text-white rounded-tr-sm shadow-tp-md" 
+                  : "bg-tp-surface border border-tp-border rounded-tl-sm shadow-sm"
+              )}>
+                {renderMessageContent(msg.content)}
+              </div>
+            </motion.div>
+          ))}
+          
+          {isLoading && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex gap-4 flex-row"
+            >
+              <div className="w-8 h-8 rounded-full bg-tp-accent flex items-center justify-center shrink-0 shadow-tp-sm">
+                <Sparkles size={14} className="text-white" />
+              </div>
+              <div className="bg-tp-surface border border-tp-border rounded-2xl rounded-tl-sm p-5 shadow-sm flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-tp-accent animate-bounce" />
+                <div className="w-2 h-2 rounded-full bg-tp-accent animate-bounce" style={{ animationDelay: '0.15s' }} />
+                <div className="w-2 h-2 rounded-full bg-tp-accent animate-bounce" style={{ animationDelay: '0.3s' }} />
+              </div>
+            </motion.div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Empty State Prompt Chips */}
+        {messages.length === 1 && !isLoading && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="max-w-4xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-3 gap-4"
+          >
+            {PROMPT_SUGGESTIONS.map((suggestion, idx) => {
+              const Icon = suggestion.icon;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => handleSend(suggestion.description)}
+                  className="group flex flex-col items-start p-5 bg-tp-surface border border-tp-border rounded-2xl hover:border-tp-accent hover:shadow-tp-md transition-all text-left"
+                >
+                  <div className="p-2 bg-tp-bg rounded-lg mb-3 group-hover:scale-110 transition-transform">
+                    <Icon size={18} className={suggestion.color} />
+                  </div>
+                  <h3 className="font-semibold text-tp-foreground text-sm mb-1">{suggestion.title}</h3>
+                  <p className="text-tp-muted text-xs line-clamp-2">"{suggestion.description}"</p>
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
+      </div>
+
+      {/* Input Box */}
+      <div className="flex-none p-6 bg-gradient-to-t from-tp-bg via-tp-bg to-transparent z-10 relative">
+        <div className="max-w-4xl mx-auto">
+          <div className="relative group">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-tp-accent to-indigo-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+            <div className="relative flex items-center bg-tp-surface border border-tp-border rounded-2xl shadow-tp-lg">
+              <textarea
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
+                placeholder="Ask me to summarize tasks, prioritize work, or detect risks..."
+                className="w-full bg-transparent py-4 pl-5 pr-14 text-sm text-tp-foreground placeholder-tp-muted focus:outline-none resize-none max-h-32 min-h-[56px] rounded-2xl"
+                rows={1}
+                disabled={isLoading}
+              />
+              <button
+                onClick={() => handleSend()}
+                disabled={isLoading || !input.trim()}
+                className="absolute right-2 bottom-2 top-2 px-3 bg-tp-accent text-white rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                <ArrowRight size={18} />
+              </button>
+            </div>
           </div>
-          <p className="text-center text-xs text-[var(--text-muted)] mt-3">AI can make mistakes. Verify important information.</p>
+          <p className="text-center text-xs text-tp-muted mt-4 flex items-center justify-center gap-1.5">
+            <ShieldAlert size={12} />
+            AI can make mistakes. Please verify important workspace information.
+          </p>
         </div>
       </div>
     </div>

@@ -1,16 +1,33 @@
 import React, { useMemo } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import { useProjectCompatibility } from '../../hooks/useProjectCompatibility';
-import { formatDistanceToNow, isToday, isBefore, startOfDay, endOfDay } from 'date-fns';
+import { format, isBefore, startOfDay, endOfDay } from 'date-fns';
 import InviteTeamModal from '../team/InviteTeamModal';
+import { Sparkles, CalendarClock, AlertCircle, Calendar, Activity, CheckCircle2, ChevronRight, UserPlus, Plus, LayoutGrid } from 'lucide-react';
+import { cn } from '../../lib/utils';
+import Avatar from '../shared/Avatar';
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 }
+  }
+};
+
+const fadeUpItem = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }
+};
 
 export default function CommandCenter() {
   const { user } = useAuth();
   const [showInviteModal, setShowInviteModal] = React.useState(false);
-  const { activeWorkspace, tasks } = useWorkspace();
-  const { projects } = useProjectCompatibility();
+  const { activeWorkspace, tasks, loading } = useWorkspace();
+  const { projects, loading: projectsLoading } = useProjectCompatibility();
 
   const navigate = useNavigate();
   const outletContext = useOutletContext();
@@ -42,7 +59,6 @@ export default function CommandCenter() {
       if (isBefore(date, todayStart)) {
         overdueCount++;
       } else if (isBefore(date, todayEnd) && !isBefore(date, todayStart)) {
-        // Since it's not before todayStart and before todayEnd, it falls exactly on today
         dueTodayCount++;
       } else {
         upcomingCount++;
@@ -67,178 +83,273 @@ export default function CommandCenter() {
       .slice(0, 5);
   }, [tasks]);
 
-  return (
-    <div className="flex-1 p-8 bg-[var(--bg-base)] overflow-auto text-[var(--text-primary)]">
-      <div className="max-w-7xl mx-auto space-y-6">
-        
-        {/* Welcome Header */}
-        <div className="flex justify-between items-end pb-6 border-b border-[var(--border-subtle)]">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">{greeting}, {user?.name?.split(' ')[0] || 'User'}!</h1>
-            <p className="text-[var(--text-muted)] mt-1">Here is what's happening in <span className="font-semibold text-[var(--text-primary)]">{activeWorkspace?.name || 'your workspace'}</span> today.</p>
+  const getPriorityTag = (score) => {
+    if (score >= 80) return { label: 'High', class: 'bg-tp-danger-soft text-tp-danger' };
+    if (score >= 50) return { label: 'Medium', class: 'bg-tp-warning-soft text-tp-warning' };
+    return { label: 'Low', class: 'bg-tp-accent-soft text-tp-accent' };
+  };
+
+  if (loading || projectsLoading) {
+    return (
+      <div className="flex-1 p-6 md:p-8 bg-tp-bg overflow-auto">
+        <div className="max-w-5xl mx-auto space-y-6">
+          <div className="flex items-end justify-between pb-6 border-b border-tp-border">
+            <div>
+              <div className="tp-skeleton h-8 w-64 rounded-md mb-2"></div>
+              <div className="tp-skeleton h-4 w-48 rounded-md"></div>
+            </div>
+            <div className="flex gap-3">
+              <div className="tp-skeleton h-9 w-24 rounded-md"></div>
+              <div className="tp-skeleton h-9 w-32 rounded-md"></div>
+            </div>
           </div>
-          <div className="flex gap-3">
+          <div className="tp-skeleton h-48 w-full rounded-xl"></div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="tp-skeleton h-24 rounded-xl"></div>
+            <div className="tp-skeleton h-24 rounded-xl"></div>
+            <div className="tp-skeleton h-24 rounded-xl"></div>
+            <div className="tp-skeleton h-24 rounded-xl"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 p-6 md:p-8 bg-tp-bg overflow-auto">
+      <motion.div 
+        variants={staggerContainer}
+        initial="hidden"
+        animate="show"
+        className="max-w-5xl mx-auto space-y-8"
+      >
+        {/* Welcome Header */}
+        <motion.div variants={fadeUpItem} className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 pb-6 border-b border-tp-border">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-tp-foreground">
+              {greeting}, {user?.name?.split(' ')[0] || 'User'}
+            </h1>
+            <p className="text-sm text-tp-muted mt-1.5">
+              Here is your executive overview for <span className="font-medium text-tp-foreground">{activeWorkspace?.name || 'your workspace'}</span>.
+            </p>
+          </div>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
             <button 
               onClick={() => setShowInviteModal(true)}
-              className="px-4 py-2 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-md font-medium hover:border-[var(--text-muted)] transition-colors"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 h-9 px-4 rounded-md bg-tp-surface border border-tp-border text-sm font-medium text-tp-foreground transition-colors hover:border-tp-border-strong hover:bg-tp-elevated"
             >
+              <UserPlus size={16} className="text-tp-muted" />
               Invite Team
             </button>
             <button 
               onClick={() => onCreateTask?.()}
-              className="px-4 py-2 bg-[var(--accent)] text-white rounded-md font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 h-9 px-4 rounded-md bg-tp-accent text-sm font-medium text-tp-accent-foreground shadow-tp-sm transition-colors hover:bg-tp-accent-hover"
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-              Create Task
+              <Plus size={16} />
+              New Task
             </button>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Dashboard Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* AI Focus Panel */}
+        <motion.div variants={fadeUpItem} className="tp-ai-border tp-ai-glow relative overflow-hidden rounded-xl bg-tp-surface p-6 shadow-tp-md">
+          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-ai-gradient opacity-10 blur-3xl pointer-events-none" />
           
-          {/* AI Focus Panel (Span 8) */}
-          <div className="col-span-1 lg:col-span-8 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-6 relative overflow-hidden shadow-sm">
-            <div className="absolute top-0 right-0 p-32 bg-indigo-500/10 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-            <div className="flex items-center gap-2 mb-4 relative z-10">
-              <span className="p-1.5 bg-indigo-500/10 text-indigo-500 rounded-md">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
-              </span>
-              <h2 className="text-xl font-bold">AI Focus Panel</h2>
-            </div>
-            <p className="text-[var(--text-muted)] text-sm mb-6 relative z-10">TaskPulse recommends focusing on these high-priority items based on your current workload and upcoming deadlines.</p>
-            
-            <div className="space-y-3 relative z-10">
-              {aiRecommendedTasks.length === 0 ? (
-                <div className="text-sm text-[var(--text-muted)] italic">No AI recommendations available. Keep up the good work!</div>
-              ) : (
-                aiRecommendedTasks.map(task => (
+          <div className="flex items-center gap-2 mb-4 relative z-10">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-tp-accent-soft text-tp-accent">
+              <Sparkles size={16} />
+            </span>
+            <h2 className="text-base font-semibold text-tp-foreground">AI Priority Focus</h2>
+          </div>
+          
+          <div className="relative z-10 grid gap-3 md:grid-cols-3">
+            {aiRecommendedTasks.length === 0 ? (
+              <div className="col-span-3 rounded-lg border border-tp-border bg-tp-bg p-6 text-center">
+                <CheckCircle2 size={24} className="mx-auto mb-2 text-tp-success" />
+                <p className="text-sm font-medium text-tp-foreground">No urgent priorities</p>
+                <p className="text-xs text-tp-muted mt-1">You are completely caught up on critical tasks.</p>
+              </div>
+            ) : (
+              aiRecommendedTasks.map((task) => {
+                const priority = getPriorityTag(task.ai?.priority || 0);
+                return (
                   <div 
-                    key={task._id} 
+                    key={task._id}
                     onClick={() => navigate(`/dashboard/task/${task._id}`)}
-                    className="flex items-center justify-between p-4 bg-[var(--bg-base)] rounded-lg border border-[var(--border-subtle)] hover:border-[var(--accent)] transition-colors cursor-pointer"
+                    className="group flex flex-col justify-between rounded-lg border border-tp-border bg-tp-bg p-4 transition-all hover:-translate-y-0.5 hover:border-tp-accent hover:shadow-tp-sm cursor-pointer"
                   >
-                    <div className="flex items-center gap-3">
-                      <span className={`w-2 h-2 rounded-full ${task.ai?.urgency === 'critical' ? 'bg-red-500' : 'bg-orange-500'}`}></span>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-semibold text-sm">{task.title}</h4>
-                          {task.ai?.priority && (
-                            <span className="text-[10px] bg-indigo-500/10 text-indigo-500 px-1.5 py-0.5 rounded font-mono">
-                              Score: {task.ai.priority}
-                            </span>
-                          )}
-                        </div>
-                        {task.ai?.reasoning && <p className="text-xs text-[var(--text-muted)] mt-0.5 line-clamp-1">{task.ai.reasoning}</p>}
+                    <div>
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h4 className="font-medium text-sm text-tp-foreground line-clamp-2">{task.title}</h4>
+                        <span className={cn("shrink-0 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider", priority.class)}>
+                          {priority.label}
+                        </span>
                       </div>
+                      {task.ai?.reasoning && (
+                        <p className="text-xs text-tp-muted line-clamp-2 leading-relaxed">
+                          {task.ai.reasoning}
+                        </p>
+                      )}
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`px-2 py-1 text-[10px] font-bold rounded-md ${task.ai?.urgency === 'critical' ? 'bg-red-500/10 text-red-500' : 'bg-orange-500/10 text-orange-500'}`}>
-                        {task.ai?.urgency || 'high'}
+                    <div className="mt-4 flex items-center justify-between border-t border-tp-border pt-3">
+                      <span className="text-[11px] font-medium text-tp-muted">
+                        Score: {task.ai?.priority || 0}/100
                       </span>
+                      <ChevronRight size={14} className="text-tp-subtle opacity-0 transition-opacity group-hover:opacity-100 group-hover:text-tp-accent" />
                     </div>
                   </div>
-                ))
-              )}
+                );
+              })
+            )}
+          </div>
+        </motion.div>
+
+        {/* Metrics Row */}
+        <motion.div variants={fadeUpItem} className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="rounded-xl border border-tp-border bg-tp-surface p-5 shadow-tp-sm">
+            <div className="flex items-center gap-2 text-tp-muted mb-2">
+              <AlertCircle size={14} className="text-tp-danger" />
+              <span className="text-xs font-semibold uppercase tracking-wider">Overdue</span>
             </div>
+            <p className={cn("text-2xl font-semibold", overdue > 0 ? "text-tp-danger" : "text-tp-foreground")}>
+              {overdue}
+            </p>
+          </div>
+          
+          <div className="rounded-xl border border-tp-border bg-tp-surface p-5 shadow-tp-sm">
+            <div className="flex items-center gap-2 text-tp-muted mb-2">
+              <CalendarClock size={14} className="text-tp-warning" />
+              <span className="text-xs font-semibold uppercase tracking-wider">Due Today</span>
+            </div>
+            <p className={cn("text-2xl font-semibold", dueToday > 0 ? "text-tp-warning" : "text-tp-foreground")}>
+              {dueToday}
+            </p>
+          </div>
+          
+          <div className="rounded-xl border border-tp-border bg-tp-surface p-5 shadow-tp-sm">
+            <div className="flex items-center gap-2 text-tp-muted mb-2">
+              <Calendar size={14} />
+              <span className="text-xs font-semibold uppercase tracking-wider">Upcoming</span>
+            </div>
+            <p className="text-2xl font-semibold text-tp-foreground">
+              {upcoming}
+            </p>
           </div>
 
-          {/* My Day (Span 4) */}
-          <div className="col-span-1 lg:col-span-4 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-6 flex flex-col shadow-sm">
-            <h2 className="text-xl font-bold mb-1">My Day</h2>
-            <p className="text-[var(--text-muted)] text-sm mb-6">Your personal agenda.</p>
-            
-            <div className="flex-1 space-y-4">
-              {overdue === 0 && dueToday === 0 && upcoming === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center space-y-2 py-4">
-                  <div className="w-10 h-10 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center mb-2">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                  </div>
-                  <span className="text-sm font-medium text-[var(--text-primary)]">You're all caught up!</span>
-                  <span className="text-xs text-[var(--text-muted)]">No tasks scheduled for today.</span>
-                </div>
-              ) : (
-                <>
-                  <div className="flex justify-between items-center pb-2 border-b border-[var(--border-subtle)]">
-                    <span className="text-sm font-medium">Overdue</span>
-                    <span className={`w-6 h-6 rounded-full text-xs flex items-center justify-center font-bold ${overdue > 0 ? 'bg-red-500/10 text-red-500' : 'bg-[var(--border-subtle)] text-[var(--text-muted)]'}`}>{overdue}</span>
-                  </div>
-                  <div className="flex justify-between items-center pb-2 border-b border-[var(--border-subtle)]">
-                    <span className="text-sm font-medium">Due Today</span>
-                    <span className={`w-6 h-6 rounded-full text-xs flex items-center justify-center font-bold ${dueToday > 0 ? 'bg-[var(--accent)] text-white' : 'bg-[var(--border-subtle)] text-[var(--text-muted)]'}`}>{dueToday}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-[var(--text-muted)]">Upcoming</span>
-                    <span className="text-xs font-bold text-[var(--text-muted)]">{upcoming}</span>
-                  </div>
-                </>
-              )}
+          <div className="rounded-xl border border-tp-border bg-tp-surface p-5 shadow-tp-sm relative overflow-hidden">
+            <div className="absolute right-0 bottom-0 p-4 opacity-10"><Activity size={64} /></div>
+            <div className="flex items-center gap-2 text-tp-muted mb-2 relative z-10">
+              <CheckCircle2 size={14} className="text-tp-success" />
+              <span className="text-xs font-semibold uppercase tracking-wider">Completed</span>
             </div>
+            <p className="text-2xl font-semibold text-tp-success relative z-10">
+              {tasks.filter(t => t.status === 'done').length}
+            </p>
           </div>
+        </motion.div>
 
-          {/* Project Overview (Span 6) */}
-          <div className="col-span-1 lg:col-span-6 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-6 shadow-sm">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">Project Overview</h2>
+        {/* 2-Column Layout */}
+        <motion.div variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          {/* Projects Column */}
+          <motion.div variants={fadeUpItem} className="space-y-4">
+            <div className="flex items-center justify-between px-1">
+              <h3 className="text-sm font-semibold text-tp-foreground">Active Projects</h3>
               <button 
                 onClick={() => navigate(`/dashboard/${activeWorkspace?.slug || activeWorkspace?._id || 'workspace'}/projects`)}
-                className="text-xs text-[var(--accent)] font-semibold hover:underline"
+                className="text-xs font-medium text-tp-accent hover:text-tp-accent-hover transition-colors"
               >
-                View All
+                View all
               </button>
             </div>
             
-            <div className="space-y-4">
+            <div className="grid gap-3">
               {projects.length === 0 ? (
-                <div className="text-sm text-[var(--text-muted)]">No active projects.</div>
+                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-tp-border-strong bg-tp-surface py-12 text-center">
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-tp-bg text-tp-muted">
+                    <LayoutGrid size={18} />
+                  </div>
+                  <p className="text-sm font-medium text-tp-foreground">No active projects</p>
+                  <p className="text-xs text-tp-muted mt-1">Create a project to organize your tasks.</p>
+                </div>
               ) : (
                 projects.slice(0, 4).map(project => (
-                  <div key={project._id} className="p-4 border border-[var(--border-subtle)] rounded-lg hover:border-[var(--text-muted)] transition-colors cursor-pointer">
-                    <div className="flex justify-between mb-2">
-                      <h4 className="font-semibold text-sm line-clamp-1">{project.name}</h4>
-                      <span className="text-xs text-[var(--text-muted)]">{project.progress || 0}%</span>
+                  <div 
+                    key={project._id}
+                    onClick={() => navigate(`/dashboard/${activeWorkspace?.slug || activeWorkspace?._id}/projects/${project._id}`)}
+                    className="group rounded-xl border border-tp-border bg-tp-surface p-4 transition-all hover:border-tp-border-strong hover:shadow-tp-sm cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-medium text-tp-foreground line-clamp-1 group-hover:text-tp-accent transition-colors">
+                        {project.name}
+                      </h4>
+                      <span className="text-xs font-medium text-tp-muted bg-tp-bg px-2 py-0.5 rounded-md">
+                        {project.progress || 0}%
+                      </span>
                     </div>
-                    <div className="w-full bg-[var(--bg-base)] h-2 rounded-full overflow-hidden">
-                      <div className="bg-[var(--accent)] h-full" style={{ width: `${project.progress || 0}%` }}></div>
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-tp-bg">
+                      <div 
+                        className="h-full bg-tp-accent rounded-full transition-all duration-500 ease-out" 
+                        style={{ width: `${project.progress || 0}%` }} 
+                      />
                     </div>
                   </div>
                 ))
               )}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Team Activity Feed (Span 6) */}
-          <div className="col-span-1 lg:col-span-6 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl p-6 shadow-sm">
-            <h2 className="text-xl font-bold mb-6">Team Activity</h2>
+          {/* Activity Column */}
+          <motion.div variants={fadeUpItem} className="space-y-4">
+            <div className="px-1">
+              <h3 className="text-sm font-semibold text-tp-foreground">Team Activity</h3>
+            </div>
             
-            <div className="space-y-4">
+            <div className="rounded-xl border border-tp-border bg-tp-surface p-5 shadow-tp-sm">
               {recentActivity.length === 0 ? (
-                <div className="text-sm text-[var(--text-muted)]">No recent activity.</div>
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <Activity size={24} className="text-tp-muted mb-2 opacity-50" />
+                  <p className="text-sm font-medium text-tp-foreground">Quiet in here...</p>
+                  <p className="text-xs text-tp-muted mt-1">Activity will show up when tasks are updated.</p>
+                </div>
               ) : (
-                recentActivity.map(task => {
-                  const assignee = task.assignedTo?.name || 'Someone';
-                  const initials = assignee.substring(0, 2).toUpperCase();
-                  const action = task.status === 'done' ? 'completed' : task.updatedAt ? 'updated' : 'created';
-                  const date = task.updatedAt || task.createdAt;
+                <div className="relative border-l-2 border-tp-border ml-3 space-y-6">
+                  {recentActivity.map((task) => {
+                    const assignee = task.assignedTo?.name || 'Someone';
+                    const action = task.status === 'done' ? 'completed' : task.updatedAt ? 'updated' : 'created';
+                    
+                    const dateVal = task.updatedAt || task.createdAt;
+                    const dateObj = dateVal ? new Date(dateVal) : new Date();
+                    
+                    // User requested absolute date timestamp formatting
+                    const formattedDate = format(dateObj, "MMM d, yyyy 'at' h:mm a");
 
-                  return (
-                    <div key={task._id} className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold text-xs shrink-0" title={assignee}>
-                        {initials}
+                    return (
+                      <div key={task._id} className="relative pl-6">
+                        <div className="absolute -left-[17px] top-1 flex h-8 w-8 items-center justify-center rounded-full bg-tp-surface">
+                          <Avatar name={assignee} size={28} />
+                        </div>
+                        <div>
+                          <p className="text-sm text-tp-foreground">
+                            <span className="font-semibold">{assignee}</span> {action}{' '}
+                            <span className="font-medium text-tp-accent cursor-pointer hover:underline" onClick={() => navigate(`/dashboard/task/${task._id}`)}>
+                              {task.title}
+                            </span>
+                          </p>
+                          <p className="mt-1 text-[11px] font-medium text-tp-muted uppercase tracking-wide">
+                            {formattedDate}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm"><span className="font-semibold">{assignee}</span> {action} task <span className="font-medium text-[var(--accent)]">{task.title}</span></p>
-                        <p className="text-xs text-[var(--text-muted)] mt-0.5">{date ? formatDistanceToNow(new Date(date), { addSuffix: true }) : 'Recently'}</p>
-                      </div>
-                    </div>
-                  );
-                })
+                    );
+                  })}
+                </div>
               )}
             </div>
-          </div>
+          </motion.div>
 
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
       
       {showInviteModal && (
         <InviteTeamModal onClose={() => setShowInviteModal(false)} />

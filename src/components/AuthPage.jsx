@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,8 +9,24 @@ export default function AuthPage() {
   const [isEmailView, setIsEmailView] = useState(false);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login, loading, isAuthenticated } = useAuth();
+  const { login, register, loading, isAuthenticated } = useAuth();
+  
+  // Check for invite token
+  const queryParams = new URLSearchParams(location.search);
+  const emailParam = queryParams.get('email');
+  const inviteTokenParam = queryParams.get('inviteToken');
+  
+  useEffect(() => {
+    if (emailParam) {
+      setEmail(emailParam);
+      setIsEmailView(true);
+    }
+    if (inviteTokenParam) {
+      sessionStorage.setItem('tp-invite-token', inviteTokenParam);
+    }
+  }, [emailParam, inviteTokenParam]);
 
   // Redirect if already logged in
   if (isAuthenticated) {
@@ -18,21 +34,50 @@ export default function AuthPage() {
     return null;
   }
 
-  const handleEmailLogin = async (e) => {
+  const handleEmailAuth = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (!email || !name) {
-      setError('Please fill in all fields');
-      return;
+    if (isSignup) {
+      if (!email || !name || !password) {
+        setError('Please fill in all fields');
+        return;
+      }
+      try {
+        await register(name, email, password);
+        await handlePostAuth();
+      } catch (err) {
+        setError(err.response?.data?.error?.message || 'Signup failed. Please try again.');
+      }
+    } else {
+      if (!email || !password) {
+        setError('Please enter both email and password');
+        return;
+      }
+      try {
+        await login(email, password);
+        await handlePostAuth();
+      } catch (err) {
+        setError(err.response?.data?.error?.message || 'Login failed. Please try again.');
+      }
     }
+  };
 
-    try {
-      await login(email, name);
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err.response?.data?.error?.message || 'Login failed. Please try again.');
+  const handlePostAuth = async () => {
+    const inviteToken = sessionStorage.getItem('tp-invite-token');
+    if (inviteToken) {
+      try {
+        const { default: api } = await import('../api/client');
+        const { data } = await api.post(`/invites/${inviteToken}/accept`);
+        sessionStorage.removeItem('tp-invite-token');
+        navigate(`/dashboard/${data.project.workspaceId}/projects/${data.project._id}`);
+        return;
+      } catch (err) {
+        console.error('Failed to auto-accept invite after login', err);
+        // Continue to dashboard anyway
+      }
     }
+    navigate('/dashboard');
   };
 
   const handleGoogleLogin = () => {
@@ -68,26 +113,19 @@ export default function AuthPage() {
           <>
             {/* Email View Title */}
             <h1 className="text-[18px] font-medium mb-6 tracking-tight">
-              What's your email address?
+              {isSignup ? "Create your account" : "Log in to your account"}
             </h1>
 
-            {/* Dev mode notice */}
-            <div className="w-full mb-4 flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] text-[#d97706] bg-[#d97706]/10 border border-[#d97706]/20">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="flex-shrink-0">
-                <path d="M8 1L1 15H15L8 1Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-                <path d="M8 6V9M8 11.5V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-              <span>Dev mode — enter any email &amp; name to sign in</span>
-            </div>
-
-            <form onSubmit={handleEmailLogin} className="w-full flex flex-col gap-3">
-              <input 
-                type="text"
-                placeholder="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full bg-[#111111] border border-[#2a2a2a] rounded-md px-4 py-3 text-[14px] text-white placeholder-[#666666] focus:outline-none focus:border-[#5e6ad2] transition-colors"
-              />
+            <form onSubmit={handleEmailAuth} className="w-full flex flex-col gap-3">
+              {isSignup && (
+                <input 
+                  type="text"
+                  placeholder="Your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full bg-[#111111] border border-[#2a2a2a] rounded-md px-4 py-3 text-[14px] text-white placeholder-[#666666] focus:outline-none focus:border-[#5e6ad2] transition-colors"
+                />
+              )}
               <input 
                 type="email" 
                 placeholder="Enter your email address..." 
@@ -95,6 +133,13 @@ export default function AuthPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-[#111111] border border-[#2a2a2a] rounded-md px-4 py-3 text-[14px] text-white placeholder-[#666666] focus:outline-none focus:border-[#5e6ad2] transition-colors"
                 autoFocus
+              />
+              <input 
+                type="password" 
+                placeholder="Enter your password..." 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-[#111111] border border-[#2a2a2a] rounded-md px-4 py-3 text-[14px] text-white placeholder-[#666666] focus:outline-none focus:border-[#5e6ad2] transition-colors"
               />
 
               {error && (
@@ -111,7 +156,7 @@ export default function AuthPage() {
                 {loading ? (
                   <span className="inline-block w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></span>
                 ) : (
-                  'Continue with email'
+                  'Continue'
                 )}
               </button>
 
@@ -146,12 +191,6 @@ export default function AuthPage() {
                 </svg>
                 Continue with Google
               </button>
-
-              {isSignup && (
-                <p className="text-[#888888] text-[12px] text-center my-1">
-                  You used Google to log in last time
-                </p>
-              )}
 
               <button 
                 onClick={() => setIsEmailView(true)}

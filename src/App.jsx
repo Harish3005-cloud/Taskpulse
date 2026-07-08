@@ -9,6 +9,7 @@ import Navbar from "./components/Navbar";
 import LandingPage from "./components/LandingPage";
 import AuthPage from "./components/AuthPage";
 import AuthSuccessPage from "./pages/AuthSuccessPage";
+import InvitePage from "./pages/InvitePage";
 
 // Dashboard Components
 import DashboardLayout from "./layouts/DashboardLayout";
@@ -39,7 +40,7 @@ function AppContent() {
   const location = useLocation();
   
   // Hide navbar on auth pages and anywhere inside the dashboard
-  const hideNavbar = ['/login', '/signup', '/auth/success'].includes(location.pathname) || location.pathname.startsWith('/dashboard');
+  const hideNavbar = ['/login', '/signup', '/auth/success'].includes(location.pathname) || location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/invite');
 
   return (
     <>
@@ -49,6 +50,7 @@ function AppContent() {
         <Route path="/login" element={<PublicRoute><AuthPage /></PublicRoute>} />
         <Route path="/signup" element={<PublicRoute><AuthPage /></PublicRoute>} />
         <Route path="/auth/success" element={<AuthSuccessPage />} />
+        <Route path="/invite/:token" element={<InvitePage />} />
         
         <Route path="/dashboard" element={
           <WorkspaceProvider>

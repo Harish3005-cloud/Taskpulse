@@ -6,13 +6,14 @@ import { KanbanView } from './KanbanView';
 import { ListView } from './ListView';
 import { LayoutGrid, List } from 'lucide-react';
 import { Button } from '../ui/button';
+import TaskDetailPanel from '../tasks/TaskDetailPanel';
 import { useParams } from 'react-router-dom';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import api from '../../api/client';
 
 export default function TaskBoard() {
   const { teamSlug, projectId, viewId } = useParams();
-  const { workspaces, activeWorkspace, setActiveWorkspace } = useWorkspace();
+  const { workspaces, activeWorkspace, setActiveWorkspace, triggerRefresh } = useWorkspace();
   
   useEffect(() => {
     if (teamSlug) {
@@ -23,7 +24,9 @@ export default function TaskBoard() {
     }
   }, [teamSlug, workspaces, activeWorkspace, setActiveWorkspace]);
 
-  const workspaceId = activeWorkspace?._id || localStorage.getItem('tp-workspace-id');
+  const workspaceId = (activeWorkspace && (teamSlug === activeWorkspace.slug || teamSlug === activeWorkspace._id))
+    ? activeWorkspace._id
+    : (teamSlug || activeWorkspace?._id || localStorage.getItem('tp-workspace-id'));
   
   const {
     filters,
@@ -49,6 +52,7 @@ export default function TaskBoard() {
       try {
         await api.delete(`/tasks/${taskId}`, { data: { workspaceId } });
         setTasks(prev => prev.filter(t => (t._id || t.id) !== taskId));
+        triggerRefresh(); // Global trigger
       } catch (err) {
         console.error('Failed to delete task', err);
         alert('Failed to delete task');
@@ -56,11 +60,18 @@ export default function TaskBoard() {
     }
   };
 
+  const [editingTask, setEditingTask] = useState(null);
+
   const handleEditTask = (taskId) => {
-    console.log('Edit task', taskId);
-    // In a real app, this would open a TaskDetailPanel or Drawer
-    // setEditingTaskId(taskId);
-    alert(`Opening edit panel for task: ${taskId}`);
+    const task = tasks.find(t => (t._id || t.id) === taskId);
+    if (task) {
+      setEditingTask(task);
+    }
+  };
+
+  const handleUpdateTaskDetails = (taskId, updates) => {
+    setTasks(prev => prev.map(t => (t._id === taskId || t.id === taskId) ? { ...t, ...updates } : t));
+    triggerRefresh(); // Global trigger
   };
 
   const handleUpdateTaskStatus = async (taskId, newStatus) => {
@@ -69,6 +80,7 @@ export default function TaskBoard() {
     
     try {
       await api.patch(`/tasks/${taskId}`, { workspaceId, status: newStatus });
+      triggerRefresh(); // Global trigger
     } catch (err) {
       console.error('Failed to update task status', err);
       // Revert if failed
@@ -153,6 +165,15 @@ export default function TaskBoard() {
           </>
         )}
       </div>
+
+      {editingTask && (
+        <TaskDetailPanel 
+          task={editingTask} 
+          onClose={() => setEditingTask(null)} 
+          members={members}
+          onUpdateTask={handleUpdateTaskDetails}
+        />
+      )}
     </div>
   );
 }

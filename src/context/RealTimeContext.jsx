@@ -22,7 +22,7 @@ export function RealTimeProvider({ children }) {
     if (!token) return;
 
     // Connect to the backend socket
-    const socketInstance = io(import.meta.env.VITE_API_URL || 'http://localhost:3000', {
+    const socketInstance = io(import.meta.env.VITE_API_URL || 'https://taskpulseserverdesign-production.up.railway.app', {
       auth: { token },
       transports: ['websocket']
     });

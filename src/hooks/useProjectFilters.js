@@ -2,7 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useDebounce } from './useDebounce';
 import api from '../api/client';
 
+import { useWorkspace } from '../context/WorkspaceContext';
+
 export function useProjectFilters(workspaceId, projectId, viewId) {
+  const { refreshTrigger } = useWorkspace();
   const [filters, setFilters] = useState({
     status: 'all',
     priority: 'any',
@@ -63,8 +66,6 @@ export function useProjectFilters(workspaceId, projectId, viewId) {
       if (debouncedFilters.priority !== 'any') params.priority = debouncedFilters.priority;
       if (debouncedFilters.category !== 'any') params.category = debouncedFilters.category;
       if (debouncedFilters.assignee !== 'any') params.assignedTo = debouncedFilters.assignee;
-      if (debouncedFilters.dateFrom) params.from = debouncedFilters.dateFrom.toISOString();
-      if (debouncedFilters.dateTo) params.to = debouncedFilters.dateTo.toISOString();
 
       const res = await api.get('/tasks', { params });
       
@@ -88,7 +89,7 @@ export function useProjectFilters(workspaceId, projectId, viewId) {
 
   useEffect(() => {
     fetchTasks(false);
-  }, [fetchTasks]);
+  }, [fetchTasks, refreshTrigger]);
 
   const loadMore = () => {
     setOffset(prev => prev + limit);

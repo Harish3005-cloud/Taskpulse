@@ -1,189 +1,643 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import './LandingPage.css';
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  Activity,
+  ArrowRight,
+  Sparkles,
+  LayoutGrid,
+  Zap,
+  Users,
+  Bell,
+  Filter,
+  TrendingUp,
+  CalendarClock,
+  MessageSquare,
+  Check,
+} from "lucide-react";
+import { cn } from "../lib/utils";
+import "./LandingPage.css";
+import DashboardPreview from "../assets/dashboard-hero.png";
 
-import aiGif from '../assets/ai.gif';
-import security from '../assets/security.gif';
-import social from '../assets/social.gif';
-import realTimeMp4 from '../assets/real-time.mp4';
-import multiTenant from '../assets/multiTenant.mp4';
-import weeklyDigestGif from '../assets/weekly_digest.gif';
+/* ------------------------------------------------------------------ */
+/*  Shared framer-motion presets                                       */
+/* ------------------------------------------------------------------ */
+const EASE_SPRING = [0.22, 1, 0.36, 1];
 
+const staggerContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+};
+
+const fadeUpItem = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_SPRING } },
+};
+
+const fadeUpCard = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE_SPRING } },
+};
+
+/* ------------------------------------------------------------------ */
+/*  HERO                                                               */
+/* ------------------------------------------------------------------ */
+function Hero() {
+  return (
+    <section className="relative overflow-hidden pt-28 sm:pt-32">
+      {/* Ambient AI glow */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-40 right-[-10%] h-[520px] w-[520px] rounded-full opacity-40 blur-[120px]"
+        style={{ background: "var(--tp-ai-gradient)" }}
+      />
+      <div
+        aria-hidden="true"
+        className="landing-section-gradient-line pointer-events-none absolute inset-x-0 top-0 h-px"
+      />
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="show"
+          className="mx-auto max-w-3xl text-center"
+        >
+          {/* AI badge */}
+          <motion.a
+            variants={fadeUpItem}
+            href="#ai"
+            className="tp-ai-border inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-medium text-tp-foreground"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-tp-ai-to" />
+            <span className="tp-ai-text font-semibold">New</span>
+            <span className="text-tp-muted">AI priority scoring for every task</span>
+          </motion.a>
+
+          {/* Headline */}
+          <motion.h1
+            variants={fadeUpItem}
+            className="mt-6 text-balance text-5xl font-semibold leading-[1.05] tracking-tight text-tp-foreground sm:text-6xl lg:text-7xl"
+          >
+            Task management that
+            <br className="hidden sm:block" /> thinks{" "}
+            <span className="tp-ai-text">a step ahead</span>.
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            variants={fadeUpItem}
+            className="mx-auto mt-6 max-w-xl text-pretty text-lg leading-relaxed text-tp-muted"
+          >
+            TaskPulse scores what matters, drafts your day, and keeps every team
+            in sync in real time — so your work moves at the speed of your ideas.
+          </motion.p>
+
+          {/* CTAs */}
+          <motion.div
+            variants={fadeUpItem}
+            className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
+          >
+            <Link
+              to="/signup"
+              className="group inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-tp-accent px-6 text-base font-medium text-tp-accent-foreground shadow-tp-sm transition-all hover:bg-tp-accent-hover"
+            >
+              Start free
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+            <a
+              href="#how"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-tp-border bg-tp-surface px-6 text-base font-medium text-tp-foreground transition-all hover:border-tp-border-strong hover:bg-tp-elevated"
+            >
+              See how it works
+            </a>
+          </motion.div>
+
+          <motion.p variants={fadeUpItem} className="mt-4 text-sm text-tp-subtle">
+            Free for small teams · No credit card required
+          </motion.p>
+        </motion.div>
+
+        {/* Product screenshot placeholder */}
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.35, ease: EASE_SPRING }}
+          className="relative mx-auto mt-16 max-w-6xl"
+        >
+          <div className="tp-ai-glow overflow-hidden rounded-xl border border-tp-border bg-tp-surface shadow-tp-lg">
+            <img
+              src={DashboardPreview}
+              alt="TaskPulse dashboard preview"
+              className="w-full"
+              loading="eager"
+            />
+          </div>
+          {/* Fade bottom edge */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 -bottom-1 h-32 bg-gradient-to-t from-tp-bg to-transparent"
+          />
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  LOGO CLOUD                                                         */
+/* ------------------------------------------------------------------ */
+const logos = ["Northwind", "Acme", "Lumen", "Cobalt", "Vertex", "Halcyon"];
+
+function LogoCloud() {
+  return (
+    <section className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+      <p className="text-center text-xs font-medium uppercase tracking-widest text-tp-subtle">
+        Trusted by fast-moving teams
+      </p>
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:gap-x-14">
+        {logos.map((name) => (
+          <span
+            key={name}
+            className="text-lg font-semibold tracking-tight text-tp-subtle transition-colors hover:text-tp-muted"
+          >
+            {name}
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  FEATURE BENTO                                                      */
+/* ------------------------------------------------------------------ */
 const features = [
   {
-    icon: <img src={aiGif} alt="AI Prioritization" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />,
-    title: 'AI-Powered Prioritization',
-    description: 'Let AI analyze your tasks and suggest priorities, deadlines, and categories automatically.'
+    icon: LayoutGrid,
+    title: "Views that fit how you work",
+    body: "List, board, and calendar — save filtered views per team and switch instantly.",
+    className: "sm:col-span-2",
   },
   {
-    icon: <video src={realTimeMp4} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />,
-    title: 'Real-Time Collaboration',
-    description: 'See updates instantly across your team. WebSocket-powered live task updates.'
+    icon: Zap,
+    title: "Real-time by default",
+    body: "Changes sync live across every device and teammate. No refresh, ever.",
   },
   {
-    icon: <img src={weeklyDigestGif} alt="Weekly Digest" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />,
-    title: 'Weekly AI Digests',
-    description: 'Get automated weekly summaries with insights on your team\'s productivity and blockers.'
+    icon: Users,
+    title: "Multi-tenant workspaces",
+    body: "Separate teams, projects, and permissions — cleanly isolated.",
   },
   {
-    icon: <video src={multiTenant} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />,
-    title: 'Multi-Tenant Workspaces',
-    description: 'Create isolated workspaces for different teams or projects with role-based access.'
+    icon: Bell,
+    title: "An inbox that respects focus",
+    body: "Notifications grouped by project, with mentions surfaced first.",
   },
   {
-    icon: <img src={security} alt="Enterprise Security" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />,
-    title: 'Enterprise Security',
-    description: 'JWT authentication, refresh token rotation, and full data isolation between tenants.'
+    icon: Filter,
+    title: "Powerful command palette",
+    body: "Jump to anything and run actions from the keyboard in milliseconds.",
+    className: "sm:col-span-2",
   },
-  {
-    icon: <img src={social} alt="Social Login" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />,
-    title: 'Social Login',
-    description: 'Login with Google, Facebook, or LinkedIn. Quick and secure access.'
-  }
 ];
 
-export default function LandingPage() {
+function FeatureBento() {
   return (
-    <div className="landing">
-      {/* Hero Section */}
-      <section className="hero">
-        <div className="hero-bg">
-          <div className="hero-glow hero-glow-1"></div>
-          <div className="hero-glow hero-glow-2"></div>
-        </div>
+    <section id="features" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-2xl text-center">
+        <p className="text-sm font-semibold text-tp-accent">Built for velocity</p>
+        <h2 className="mt-3 text-balance text-3xl font-semibold tracking-tight text-tp-foreground sm:text-4xl">
+          Everything your team needs, nothing it doesn&apos;t
+        </h2>
+        <p className="mt-4 text-pretty text-lg leading-relaxed text-tp-muted">
+          The structure of a serious project tool, with the speed and calm of a
+          product you actually enjoy opening.
+        </p>
+      </div>
 
-        <div className="container hero-content">
-          <div className="hero-text-section">
-            <div className="hero-badge animate-fade-in-up">
-              <span className="badge-dot"></span>
-              AI-Powered Task Management
-            </div>
+      <motion.div
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ staggerChildren: 0.08 }}
+        className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-3"
+      >
+        {features.map((f) => (
+          <motion.div
+            key={f.title}
+            variants={fadeUpCard}
+            className={cn(
+              "group rounded-xl border border-tp-border bg-tp-surface p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-tp-border-strong hover:shadow-tp-md",
+              f.className
+            )}
+          >
+            <span className="grid h-10 w-10 place-items-center rounded-lg bg-tp-accent-soft text-tp-accent">
+              <f.icon className="h-5 w-5" />
+            </span>
+            <h3 className="mt-4 text-base font-semibold text-tp-foreground">
+              {f.title}
+            </h3>
+            <p className="mt-1.5 text-sm leading-relaxed text-tp-muted">{f.body}</p>
+          </motion.div>
+        ))}
+      </motion.div>
+    </section>
+  );
+}
 
-            <h1 className="hero-title animate-fade-in-up delay-100">
-              Manage tasks at the
-              <br />
-              <span className="gradient-text">speed of thought</span>
-            </h1>
+/* ------------------------------------------------------------------ */
+/*  AI SHOWCASE                                                        */
+/* ------------------------------------------------------------------ */
+const capabilities = [
+  {
+    icon: TrendingUp,
+    title: "Priority scoring",
+    body: "Every task gets a 0–100 score from deadlines, dependencies, and impact.",
+  },
+  {
+    icon: CalendarClock,
+    title: "Weekly digests",
+    body: "A Monday brief of what shipped, what slipped, and what needs you.",
+  },
+  {
+    icon: MessageSquare,
+    title: "Ask AI, anywhere",
+    body: "Query your workspace in plain language and act on the answer.",
+  },
+];
 
-            <p className="hero-subtitle animate-fade-in-up delay-200">
-              TaskPulse uses AI to automatically prioritize, categorize, and score your tasks.
-              <br />
-              Built for teams that ship fast.
-            </p>
+function AIShowcase() {
+  return (
+    <section id="ai" className="relative overflow-hidden py-24">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20 blur-[130px]"
+        style={{ background: "var(--tp-ai-gradient)" }}
+      />
 
-            <div className="hero-cta animate-fade-in-up delay-300">
-              <Link to="/login" className="btn btn-primary btn-lg" id="hero-get-started">
-                Get Started — It's Free
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </Link>
-              <a href="#features" className="btn btn-secondary btn-lg">
-                See Features
-              </a>
-            </div>
-          </div>
+      <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+        <div>
+          <span className="tp-ai-border inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold text-tp-foreground">
+            <Sparkles className="h-3.5 w-3.5 text-tp-ai-to" />
+            <span className="tp-ai-text">TaskPulse AI</span>
+          </span>
+          <h2 className="mt-5 text-balance text-3xl font-semibold tracking-tight text-tp-foreground sm:text-4xl">
+            The layer that decides{" "}
+            <span className="tp-ai-text">what matters next</span>
+          </h2>
+          <p className="mt-4 text-pretty text-lg leading-relaxed text-tp-muted">
+            TaskPulse reads the signals your team creates and turns them into a
+            clear, ranked plan — with reasoning you can trust and override.
+          </p>
 
-          <div className="hero-visual-section animate-fade-in-up delay-400">
-            <div className="hero-stats-vertical">
-              <div className="stat">
-                <span className="stat-value">10x</span>
-                <span className="stat-label">Faster prioritization</span>
-              </div>
-              <div className="stat-divider-horizontal"></div>
-              <div className="stat">
-                <span className="stat-value">100%</span>
-                <span className="stat-label">Test coverage target</span>
-              </div>
-              <div className="stat-divider-horizontal"></div>
-              <div className="stat">
-                <span className="stat-value">∞</span>
-                <span className="stat-label">Free tier tasks</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="features" id="features">
-        <div className="container">
-          <div className="section-header animate-fade-in-up">
-            <div className="section-header-text">
-              <h2 className="section-title">
-                Everything you need to
-                <span className="gradient-text"> ship faster</span>
-              </h2>
-              <p className="section-subtitle">
-                Production-grade task management with AI scoring, real-time updates, and team collaboration.
-              </p>
-            </div>
-            <a href="#features" className="btn btn-secondary hidden md:flex">View all features</a>
-          </div>
-
-          <div className="features-grid">
-            {features.map((feature, index) => (
-              <div 
-                key={index} 
-                className="feature-card card animate-fade-in-up"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="feature-icon">{feature.icon}</div>
-                <h3 className="feature-title">{feature.title}</h3>
-                <p className="feature-desc">{feature.description}</p>
+          <div className="mt-8 flex flex-col gap-5">
+            {capabilities.map((c) => (
+              <div key={c.title} className="flex gap-4">
+                <span className="tp-ai-surface grid h-10 w-10 shrink-0 place-items-center rounded-lg">
+                  <c.icon className="h-5 w-5" />
+                </span>
+                <div>
+                  <h3 className="text-base font-semibold text-tp-foreground">
+                    {c.title}
+                  </h3>
+                  <p className="mt-0.5 text-sm leading-relaxed text-tp-muted">
+                    {c.body}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
         </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="cta-section">
-        <div className="container">
-          <div className="cta-card card-glass animate-fade-in-up">
-            <div className="cta-text">
-              <h2 className="cta-title">Ready to supercharge your workflow?</h2>
-              <p className="cta-subtitle">
-                Start managing tasks with AI in under 30 seconds. No credit card required.
-              </p>
-            </div>
-            <div className="cta-action">
-              <Link to="/login" className="btn btn-primary btn-lg" id="cta-get-started">
-                Start Building Now
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </Link>
-            </div>
+        {/* Mock AI card */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: EASE_SPRING }}
+          className="tp-ai-border tp-ai-glow rounded-2xl p-6"
+        >
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-2 text-sm font-semibold text-tp-foreground">
+              <Sparkles className="h-4 w-4 text-tp-ai-to" /> AI daily summary
+            </span>
+            <span className="rounded-full bg-tp-accent-soft px-2.5 py-1 text-xs font-medium text-tp-accent">
+              Today
+            </span>
           </div>
-        </div>
-      </section>
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="container footer-inner">
-          <div className="footer-brand">
-            <svg 
-              width="22" 
-              height="22" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              className="text-foreground"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M6 14l6-6" />
-              <path d="M10 18l8-8" />
-            </svg> TaskPulse
-          </div>
-          <p className="footer-copy">
-            Built with Node.js, Express, MongoDB, Redis & React
+          <p className="mt-4 text-sm leading-relaxed text-tp-muted">
+            You have{" "}
+            <span className="font-semibold text-tp-foreground">3 high-priority</span>{" "}
+            tasks. The{" "}
+            <span className="font-semibold text-tp-foreground">API migration</span>{" "}
+            is blocking two teammates — I&apos;d start there.
           </p>
+
+          <div className="mt-5 space-y-3">
+            {[
+              {
+                name: "Ship API v2 migration",
+                score: 94,
+                tone: "text-tp-priority-urgent",
+              },
+              {
+                name: "Review onboarding flow",
+                score: 78,
+                tone: "text-tp-priority-high",
+              },
+              {
+                name: "Draft Q3 roadmap",
+                score: 61,
+                tone: "text-tp-priority-medium",
+              },
+            ].map((t) => (
+              <div
+                key={t.name}
+                className="flex items-center justify-between rounded-lg border border-tp-border bg-tp-surface px-4 py-3"
+              >
+                <span className="text-sm text-tp-foreground">{t.name}</span>
+                <span className={`text-sm font-semibold ${t.tone}`}>
+                  {t.score}
+                </span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  HOW IT WORKS                                                       */
+/* ------------------------------------------------------------------ */
+const steps = [
+  {
+    n: "01",
+    title: "Create your workspace",
+    body: "Spin up a team, invite people, and organize work into projects in minutes.",
+  },
+  {
+    n: "02",
+    title: "Capture and connect tasks",
+    body: "Add tasks with owners, deadlines, and dependencies — or import what you have.",
+  },
+  {
+    n: "03",
+    title: "Let AI rank the day",
+    body: "TaskPulse scores priority and drafts a focused plan you can adjust anytime.",
+  },
+];
+
+function HowItWorks() {
+  return (
+    <section id="how" className="border-y border-tp-border bg-tp-surface/50">
+      <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-sm font-semibold text-tp-accent">How it works</p>
+          <h2 className="mt-3 text-balance text-3xl font-semibold tracking-tight text-tp-foreground sm:text-4xl">
+            From zero to in-flow in three steps
+          </h2>
         </div>
-      </footer>
+
+        <div className="mt-14 grid gap-8 sm:grid-cols-3">
+          {steps.map((s, i) => (
+            <motion.div
+              key={s.n}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{
+                duration: 0.5,
+                delay: i * 0.1,
+                ease: EASE_SPRING,
+              }}
+              className="relative"
+            >
+              <span className="text-sm font-semibold text-tp-accent">
+                {s.n}
+              </span>
+              <div className="mt-2 h-px w-full bg-tp-border" />
+              <h3 className="mt-4 text-lg font-semibold text-tp-foreground">
+                {s.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-tp-muted">
+                {s.body}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  TESTIMONIALS                                                       */
+/* ------------------------------------------------------------------ */
+const quotes = [
+  {
+    quote:
+      "The AI priority score is uncanny. Standups got shorter because everyone already knows what matters.",
+    name: "Maya Chen",
+    role: "Head of Product, Northwind",
+  },
+  {
+    quote:
+      "We replaced three tools with TaskPulse. Real-time sync and views per team were the tipping point.",
+    name: "Daniel Okafor",
+    role: "Engineering Lead, Cobalt",
+  },
+  {
+    quote:
+      "The weekly digest is the first email I read on Monday. It's like a chief of staff for the whole team.",
+    name: "Priya Nair",
+    role: "COO, Lumen",
+  },
+];
+
+function Testimonials() {
+  return (
+    <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-2xl text-center">
+        <h2 className="text-balance text-3xl font-semibold tracking-tight text-tp-foreground sm:text-4xl">
+          Teams move faster with TaskPulse
+        </h2>
+      </div>
+
+      <div className="mt-14 grid gap-4 md:grid-cols-3">
+        {quotes.map((q, i) => (
+          <motion.figure
+            key={q.name}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{
+              duration: 0.5,
+              delay: i * 0.08,
+              ease: EASE_SPRING,
+            }}
+            className="flex flex-col justify-between rounded-xl border border-tp-border bg-tp-surface p-6"
+          >
+            <blockquote className="text-pretty text-[15px] leading-relaxed text-tp-foreground">
+              &ldquo;{q.quote}&rdquo;
+            </blockquote>
+            <figcaption className="mt-6 flex items-center gap-3">
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-tp-accent-soft text-sm font-semibold text-tp-accent">
+                {q.name.charAt(0)}
+              </span>
+              <div>
+                <div className="text-sm font-semibold text-tp-foreground">
+                  {q.name}
+                </div>
+                <div className="text-xs text-tp-muted">{q.role}</div>
+              </div>
+            </figcaption>
+          </motion.figure>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+
+/* ------------------------------------------------------------------ */
+/*  CTA                                                                */
+/* ------------------------------------------------------------------ */
+function CTA() {
+  return (
+    <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.6, ease: EASE_SPRING }}
+        className="relative overflow-hidden rounded-3xl border border-tp-border bg-tp-surface px-6 py-16 text-center sm:px-16"
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-0 h-72 w-[560px] -translate-x-1/2 rounded-full opacity-25 blur-[120px]"
+          style={{ background: "var(--tp-ai-gradient)" }}
+        />
+        <div className="relative">
+          <h2 className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-tight text-tp-foreground sm:text-4xl">
+            Give your team an unfair advantage
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-pretty text-lg leading-relaxed text-tp-muted">
+            Start free today. Bring AI-ranked focus to every project in minutes.
+          </p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              to="/signup"
+              className="group inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-tp-accent px-6 text-base font-medium text-tp-accent-foreground shadow-tp-sm transition-all hover:bg-tp-accent-hover"
+            >
+              Start free
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+            <a
+              href="#"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-tp-border bg-tp-surface px-6 text-base font-medium text-tp-foreground transition-all hover:border-tp-border-strong hover:bg-tp-elevated"
+            >
+              Book a demo
+            </a>
+          </div>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  FOOTER                                                             */
+/* ------------------------------------------------------------------ */
+const footerColumns = [
+  {
+    title: "Product",
+    links: ["Features", "AI", "Changelog", "Roadmap"],
+  },
+  {
+    title: "Company",
+    links: ["About", "Careers", "Blog", "Contact"],
+  },
+  {
+    title: "Resources",
+    links: ["Docs", "Guides", "API", "Status"],
+  },
+  {
+    title: "Legal",
+    links: ["Privacy", "Terms", "Security"],
+  },
+];
+
+function Footer() {
+  return (
+    <footer className="border-t border-tp-border">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid gap-10 lg:grid-cols-[1.5fr_repeat(4,1fr)]">
+          <div>
+            <Link
+              to="/"
+              className="flex items-center gap-2 font-semibold text-tp-foreground"
+            >
+              <span className="grid h-8 w-8 place-items-center rounded-lg bg-tp-accent text-tp-accent-foreground">
+                <Activity className="h-[18px] w-[18px]" strokeWidth={2.5} />
+              </span>
+              <span className="text-[15px] tracking-tight">TaskPulse</span>
+            </Link>
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-tp-muted">
+              AI-powered task management for high-velocity teams.
+            </p>
+          </div>
+
+          {footerColumns.map((col) => (
+            <div key={col.title}>
+              <h4 className="text-sm font-semibold text-tp-foreground">
+                {col.title}
+              </h4>
+              <ul className="mt-4 space-y-2.5">
+                {col.links.map((link) => (
+                  <li key={link}>
+                    <a
+                      href="#"
+                      className="text-sm text-tp-muted transition-colors hover:text-tp-foreground"
+                    >
+                      {link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-tp-border pt-8 sm:flex-row">
+          <p className="text-sm text-tp-subtle">
+            © {new Date().getFullYear()} TaskPulse. All rights reserved.
+          </p>
+          <p className="text-sm text-tp-subtle">Made for teams that ship.</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  LANDING PAGE (composed)                                            */
+/* ------------------------------------------------------------------ */
+export default function LandingPage() {
+  return (
+    <div className="min-h-screen bg-tp-bg text-tp-foreground">
+      <main>
+        <Hero />
+        <LogoCloud />
+        <FeatureBento />
+        <AIShowcase />
+        <HowItWorks />
+        <Testimonials />
+        <CTA />
+      </main>
+      <Footer />
     </div>
   );
 }

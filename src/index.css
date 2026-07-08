@@ -3,12 +3,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  TaskPulse — Global Foundation
+  ------------------------------------------------------------------
+  Design language: "Calm Precision"
+  - Dark-first, light fully supported (class-based via `.dark`)
+  - Canonical token prefix: --tp-*
+  - AI blue->purple gradient reserved ONLY for AI surfaces
+  ------------------------------------------------------------------
+  Mechanics: :root = LIGHT values, .dark = DARK overrides.
+*/
+
+@font-face {
+  font-family: "Geist Fallback";
+  src: local("Inter"), local("system-ui"), local("Arial");
+}
+
 @layer base {
   .theme {
     --font-heading: var(--font-sans);
-    --font-sans: 'Geist Variable', sans-serif
+    --font-sans: 'Geist Variable', sans-serif;
   }
+
   :root {
+    /* ---- Existing shadcn/ui variables ---- */
     --bg-base: #F9FAFB;
     --bg-surface: #FFFFFF;
     --text-primary: #0F172A;
@@ -45,9 +63,72 @@
     --sidebar-accent: oklch(0.97 0 0);
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0)
+    --sidebar-ring: oklch(0.708 0 0);
+
+    /* ---- TaskPulse Design Tokens (--tp-*) ---- */
+    /* Surfaces (3 depth tiers) */
+    --tp-bg: #f9fafb;
+    --tp-surface: #ffffff;
+    --tp-elevated: #ffffff;
+
+    /* Text */
+    --tp-text: #0f172a;
+    --tp-text-muted: #64748b;
+    --tp-text-subtle: #94a3b8;
+
+    /* Brand accent (indigo) */
+    --tp-accent: #6366f1;
+    --tp-accent-hover: #4f46e5;
+    --tp-accent-soft: rgba(99, 102, 241, 0.12);
+    --tp-on-accent: #ffffff;
+
+    /* Borders */
+    --tp-border: #e2e8f0;
+    --tp-border-strong: #cbd5e1;
+
+    /* Semantic (status + priority) */
+    --tp-success: #16a34a;
+    --tp-success-soft: rgba(22, 163, 74, 0.12);
+    --tp-warning: #d97706;
+    --tp-warning-soft: rgba(217, 119, 6, 0.12);
+    --tp-danger: #dc2626;
+    --tp-danger-soft: rgba(220, 38, 38, 0.12);
+    --tp-info: #2563eb;
+    --tp-info-soft: rgba(37, 99, 235, 0.12);
+
+    /* Priority scale (P0 highest -> P3 lowest) */
+    --tp-priority-urgent: #dc2626;
+    --tp-priority-high: #ea580c;
+    --tp-priority-medium: #d97706;
+    --tp-priority-low: #64748b;
+
+    /* AI identity (ONLY for AI surfaces) */
+    --tp-ai-from: #3b82f6;
+    --tp-ai-to: #8b5cf6;
+    --tp-ai-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    --tp-ai-glow: rgba(139, 92, 246, 0.35);
+    --tp-ai-soft: rgba(139, 92, 246, 0.1);
+
+    /* Elevation (shadows) */
+    --tp-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 1px rgba(15, 23, 42, 0.04);
+    --tp-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.04);
+    --tp-shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12), 0 4px 8px rgba(15, 23, 42, 0.06);
+
+    /* Radius */
+    --tp-radius-sm: 0.375rem;
+    --tp-radius: 0.625rem;
+    --tp-radius-lg: 0.875rem;
+    --tp-radius-xl: 1.125rem;
+
+    /* Skeleton shimmer */
+    --tp-skeleton-base: #e2e8f0;
+    --tp-skeleton-highlight: #f1f5f9;
+
+    color-scheme: light;
   }
+
   .dark {
+    /* ---- Existing shadcn/ui dark variables ---- */
     --bg-base: #09090B;
     --bg-surface: #18181B;
     --text-primary: #FAFAFA;
@@ -83,15 +164,157 @@
     --sidebar-accent: oklch(0.269 0 0);
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0)
+    --sidebar-ring: oklch(0.556 0 0);
+
+    /* ---- TaskPulse Dark Overrides ---- */
+    --tp-bg: #09090b;
+    --tp-surface: #18181b;
+    --tp-elevated: #1f1f23;
+
+    --tp-text: #fafafa;
+    --tp-text-muted: #a1a1aa;
+    --tp-text-subtle: #71717a;
+
+    --tp-accent: #818cf8;
+    --tp-accent-hover: #a5b4fc;
+    --tp-accent-soft: rgba(129, 140, 248, 0.15);
+    --tp-on-accent: #0b0b0f;
+
+    --tp-border: #27272a;
+    --tp-border-strong: #3f3f46;
+
+    --tp-success: #4ade80;
+    --tp-success-soft: rgba(74, 222, 128, 0.14);
+    --tp-warning: #fbbf24;
+    --tp-warning-soft: rgba(251, 191, 36, 0.14);
+    --tp-danger: #f87171;
+    --tp-danger-soft: rgba(248, 113, 113, 0.14);
+    --tp-info: #60a5fa;
+    --tp-info-soft: rgba(96, 165, 250, 0.14);
+
+    --tp-priority-urgent: #f87171;
+    --tp-priority-high: #fb923c;
+    --tp-priority-medium: #fbbf24;
+    --tp-priority-low: #a1a1aa;
+
+    --tp-ai-glow: rgba(139, 92, 246, 0.45);
+    --tp-ai-soft: rgba(139, 92, 246, 0.16);
+
+    --tp-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --tp-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+    --tp-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+
+    --tp-skeleton-base: #27272a;
+    --tp-skeleton-highlight: #3f3f46;
+
+    color-scheme: dark;
   }
+
   * {
     @apply border-border;
+    scrollbar-width: thin;
+    scrollbar-color: var(--tp-border-strong) transparent;
   }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--tp-border-strong);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--tp-text-subtle);
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: "Geist Variable", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
+
   html {
     @apply font-sans;
+    background-color: var(--tp-bg);
+  }
+
+  /* Accessible focus ring */
+  :focus-visible {
+    outline: 2px solid var(--tp-accent);
+    outline-offset: 2px;
+    border-radius: var(--tp-radius-sm);
+  }
+}
+
+@layer utilities {
+  /* AI gradient text / surface helpers — use ONLY on AI features */
+  .tp-ai-text {
+    background: var(--tp-ai-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  .tp-ai-surface {
+    background: var(--tp-ai-gradient);
+    color: #ffffff;
+  }
+  .tp-ai-border {
+    position: relative;
+    border: 1px solid transparent;
+    background:
+      linear-gradient(var(--tp-surface), var(--tp-surface)) padding-box,
+      var(--tp-ai-gradient) border-box;
+  }
+  .tp-ai-glow {
+    box-shadow: 0 0 0 1px var(--tp-ai-soft), 0 8px 30px var(--tp-ai-glow);
+  }
+
+  /* Skeleton shimmer */
+  .tp-skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--tp-skeleton-base);
+  }
+  .tp-skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--tp-skeleton-highlight),
+      transparent
+    );
+    animation: tp-shimmer 1.5s infinite;
+  }
+
+  .tp-glass {
+    background-color: color-mix(in srgb, var(--tp-surface) 72%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+@keyframes tp-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Respect reduced motion globally */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }
