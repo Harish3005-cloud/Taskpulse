@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import "./LandingPage.css";
-import DashboardPreview from "../assets/dashboard-hero.png";
+import DashboardPreview from "../assets/assets/dashboard-hero.png";
 
 /* ------------------------------------------------------------------ */
 /*  Shared framer-motion presets                                       */
