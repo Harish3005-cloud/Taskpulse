@@ -6,7 +6,7 @@ Welcome to the **TaskPulse** project handbook. This document serves as the compr
 
 ##  Project Motivation & Purpose
 
-TaskPulse was built as an **educational hobby project** designed to explore, implement, and master modern full-stack and backend engineering concepts. By choosing a SaaS (Software-as-a-Service) model, the project tackles the core challenges of building a production-ready application.
+TaskPulse was built as an **educational hobby project** designed to explore, implement, and master modern full-stack and backend engineering concepts. By choosing a SaaS (Software-as-a-Service) model, the project demonstrates how to build scalable, production-grade systems using industry-standard patterns and technologies.
 
 ### Key Learning Objectives
 *   **Authentication & Security**: Implementing robust JWT authentication, Google OAuth integrations, and secure cookie-based session management.
@@ -87,7 +87,7 @@ sequenceDiagram
 *   The analytics dashboard presents visual graphs tracking task status distribution, weekly completion rates, and team workload trends using **Recharts**.
 
 ### 6. AI Insights (The Assistant)
-*   Users can open the AI Page (`/dashboard/ai`) or the floating Ask AI panel to query their workspace. The backend routes the data to **OpenRouter / Gemini** to generate weekly performance digests, prioritize backlogs, or auto-assign tasks.
+*   Users can open the AI Page (`/dashboard/ai`) or the floating Ask AI panel to query their workspace. The backend routes the data to **OpenRouter / Gemini** to generate weekly performance digests and task prioritization scores based on natural language understanding.
 
 ---
 
@@ -209,26 +209,25 @@ To run the frontend and connect it to the server:
 Here is a visual overview of the TaskPulse platform, showing the system architecture, landing interface, authentication flows, and interactive dashboard sections. 
 
 ### 1. Backend Architecture
-![Backend Architecture](../sample/sample-design/src/assets/assets/backend.png)
+![Backend Architecture](src/assets/assets/backend.png)
 *High-level architecture view showcasing the connection between our React client, Express API, Redis caching, Mongo Database, and external microservices.*
 
 ### 2. Landing Page
-![Landing Page](../sample/sample-design/src/assets/assets/Landing_page.png)
+![Landing Page](src/assets/assets/Landing_page.png)
 *The dark-mode styled public landing page featuring call-to-actions, feature lists, and dynamic UI elements.*
 
 ### 3.  Authentication Page
-![Authentication Page](../sample/sample-design/src/assets/assets/Authentication.png)
+![Authentication Page](src/assets/assets/Authentication.png)
 *Clean, minimalistic authentication interface providing credentials login and secure Google OAuth integration.*
 
 ### 4.  Dashboard (Command Center)
-![Dashboard Page](../sample/sample-design/src/assets/assets/dashboard.png)
+![Dashboard Page](src/assets/assets/dashboard.png)
 *The primary workspace view displaying user tasks, team activity feeds, and active workspace filters.*
 
 ### 5.  Analytics Dashboard
-![Analytics Page](../sample/sample-design/src/assets/assets/Analytics.png)
+![Analytics Page](src/assets/assets/Analytics.png)
 *Data visualization dashboard displaying task progress distribution, weekly team completion velocity, and project status details.*
 
 ### 6.  Task Board (Kanban View)
-![Task Board Kanban View](../sample/sample-design/src/assets/assets/Kanban_view.png)
+![Task Board Kanban View](src/assets/assets/Kanban_view.png)
 *The drag-and-drop enabled project kanban board, separating tasks into Backlog, Todo, In Progress, Review, and Done lanes.*
-
