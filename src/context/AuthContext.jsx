@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 import api from '../api/client';
 
 const AuthContext = createContext(null);
@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
 
   const isAuthenticated = !!user;
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     setLoading(true);
     try {
       const { data } = await api.post('/auth/login', { email, password });
@@ -25,9 +25,9 @@ export function AuthProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const register = async (name, email, password) => {
+  const register = useCallback(async (name, email, password) => {
     setLoading(true);
     try {
       const { data } = await api.post('/auth/register', { name, email, password });
@@ -40,9 +40,9 @@ export function AuthProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await api.post('/auth/logout');
     } catch (err) {
@@ -53,9 +53,9 @@ export function AuthProvider({ children }) {
       sessionStorage.removeItem('user');
       setUser(null);
     }
-  };
+  }, []);
 
-  const fetchMe = async () => {
+  const fetchMe = useCallback(async () => {
     try {
       const { data } = await api.get('/auth/me');
       setUser(data.user);
@@ -66,13 +66,13 @@ export function AuthProvider({ children }) {
       sessionStorage.removeItem('user');
       setUser(null);
     }
-  };
+  }, []);
 
-  const handleOAuthSuccess = (token, userData) => {
+  const handleOAuthSuccess = useCallback((token, userData) => {
     sessionStorage.setItem('accessToken', token);
     sessionStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
-  };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated, loading, login, register, logout, fetchMe, handleOAuthSuccess }}>
