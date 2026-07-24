@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 import api from '../api/client';
@@ -8,6 +8,7 @@ export default function AuthSuccessPage() {
   const [searchParams] = useSearchParams();
   const { handleOAuthSuccess } = useAuth();
   const [errorMsg, setErrorMsg] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = searchParams.get('token');
@@ -31,17 +32,17 @@ export default function AuthSuccessPage() {
             try {
               const { data } = await api.post(`/invites/${inviteToken}/accept`);
               sessionStorage.removeItem('tp-invite-token');
-              window.location.href = `/dashboard/${data.project.workspaceId}/projects/${data.project._id}`;
+              navigate(`/dashboard/${data.project.workspaceId}/projects/${data.project._id}`);
             } catch (err) {
               console.error('Failed to auto-accept invite after OAuth', err);
               sessionStorage.removeItem('tp-invite-token');
-              window.location.href = '/dashboard';
+              navigate('/dashboard');
             }
           };
           setTimeout(() => acceptInvite(), 500);
         } else {
           setTimeout(() => {
-              window.location.href = '/dashboard';
+              navigate('/dashboard');
           }, 1000);
         }
         
@@ -53,7 +54,7 @@ export default function AuthSuccessPage() {
         setErrorMsg('Missing token or user data in URL.');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, handleOAuthSuccess]);
+  }, [searchParams, handleOAuthSuccess, navigate]);
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#000000] text-white px-6">
@@ -85,7 +86,7 @@ export default function AuthSuccessPage() {
           
           {/* Fallback button */}
           <button 
-            onClick={() => window.location.href = '/dashboard'} 
+            onClick={() => navigate('/dashboard')} 
             className="mt-8 inline-flex items-center justify-center bg-[#1a1a1a] hover:bg-[#222222] text-white border border-[#2a2a2a] rounded-full px-6 py-[10px] text-[13px] font-medium transition-colors"
           >
             Go to Dashboard
