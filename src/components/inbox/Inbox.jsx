@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import EmptyState from '../shared/EmptyState';
-import { CheckCircle2, User, MessageSquare, AlertCircle, Bell, ArrowRight, LayoutDashboard } from 'lucide-react';
+import { CheckCircle2, User, MessageSquare, AlertCircle, Bell, LayoutDashboard } from 'lucide-react';
 
 const NOTIF_ICONS = {
   task_assigned: <User size={16} />,

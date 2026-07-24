@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
@@ -16,32 +16,32 @@ export default function DashboardPage() {
   const [activeWs, setActiveWs] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
 
+  const fetchWorkspaces = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data } = await api.get('/workspaces');
+      setWorkspaces(data.workspaces);
+    } catch (_e) {
+      setError('Failed to load workspaces');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
     fetchWorkspaces();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate, fetchWorkspaces]);
 
   useEffect(() => {
     if (workspaces.length > 0 && !activeWs) {
       setActiveWs(workspaces[0]);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workspaces]);
-
-  const fetchWorkspaces = async () => {
-    try {
-      setLoading(true);
-      const { data } = await api.get('/workspaces');
-      setWorkspaces(data.workspaces);
-    } catch (err) {
-      setError('Failed to load workspaces');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleCreateWorkspace = async (e) => {
     e.preventDefault();
@@ -54,7 +54,7 @@ export default function DashboardPage() {
       setActiveWs(data.workspace);
       setNewWorkspaceName('');
       setShowCreate(false);
-    } catch (err) {
+    } catch (_e) {
       setError('Failed to create workspace');
     } finally {
       setCreating(false);
@@ -66,16 +66,6 @@ export default function DashboardPage() {
     navigate('/');
   };
 
-  const getTimeAgo = (date) => {
-    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-    if (seconds < 60) return 'just now';
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    return `${days}d ago`;
-  };
 
   const getWsColor = (index) => {
     const colors = [

@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import TaskStatusBadge, { formatStatus } from './TaskStatusBadge';
-import TaskPriorityBadge, { getPriorityConfig } from './TaskPriorityBadge';
+import TaskPriorityBadge from './TaskPriorityBadge';
 import Avatar from '../shared/Avatar';
 import Breadcrumbs from '../shared/Breadcrumbs';
 

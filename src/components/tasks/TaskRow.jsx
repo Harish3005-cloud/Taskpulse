@@ -65,6 +65,21 @@ const TaskRow = memo(function TaskRow({ task, isSelected, onToggleSelect, onPrev
 
       {/* Right-side metadata */}
       <span className="tp-task-row-meta">
+        {/* Project */}
+        {task.projectId && task.projectId.name && (
+          <span className="tp-task-row-project" style={{ 
+            fontSize: '12px', 
+            color: 'var(--tp-muted)', 
+            marginRight: '12px', 
+            background: 'var(--tp-surface-hover)', 
+            padding: '2px 8px', 
+            borderRadius: '12px',
+            whiteSpace: 'nowrap'
+          }}>
+            {task.projectId.name}
+          </span>
+        )}
+
         {/* Priority */}
         <span className="tp-task-row-priority">
           <TaskPriorityBadge priority={task.priority} />

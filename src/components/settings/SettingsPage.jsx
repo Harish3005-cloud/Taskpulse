@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Settings, User, Bell, Tag, LayoutTemplate, Sparkles, Building2, Users, CreditCard, ChevronLeft, LogOut } from 'lucide-react';
+import { Settings, User, Bell, Tag, LayoutTemplate, Sparkles, Building2, Users, ChevronLeft, LogOut } from 'lucide-react';
 import ProfileSection from './ProfileSection';
 import NotificationsSection from './NotificationsSection';
 import WorkspaceSection from './WorkspaceSection';

@@ -5,14 +5,14 @@ import { useAuth } from '../../context/AuthContext';
 import { useProjectFilters } from '../../hooks/useProjectFilters';
 import { KanbanView } from './KanbanView';
 import { ListView } from './ListView';
-import { LayoutGrid, List, ArrowLeft, Calendar, Users, Tag, CheckCircle2, Clock, AlertCircle, TrendingUp, Sparkles, Activity, Plus } from 'lucide-react';
+import { LayoutGrid, List, ArrowLeft, Calendar, Users, CheckCircle2, AlertCircle, TrendingUp, Sparkles, Activity, Plus } from 'lucide-react';
 import api from '../../api/client';
 import Avatar from '../shared/Avatar';
 import InviteMemberModal from './InviteMemberModal';
 import { cn } from '../../lib/utils';
 import { format, differenceInDays } from 'date-fns';
 import { motion } from 'framer-motion';
-import TaskDetailPanel from '../tasks/TaskDetailPanel';
+import EditTaskModal from '../tasks/EditTaskModal';
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -64,7 +64,7 @@ export default function ProjectDetails() {
     fetchProjectDetails();
   }, [workspaceId, projectId, refreshTrigger]);
 
-  const { tasks, setTasks, fetchTasks, members } = useProjectFilters(workspaceId, projectId, null);
+  const { tasks, setTasks, fetchTasks, members: _members } = useProjectFilters(workspaceId, projectId, null);
 
   const handleUpdateTaskStatus = async (taskId, newStatus) => {
     setTasks(prev => prev.map(t => (t._id === taskId || t.id === taskId) ? { ...t, status: newStatus } : t));
@@ -331,6 +331,7 @@ export default function ProjectDetails() {
                     tasks={tasks} 
                     onEditTask={handleEditTask} 
                     onDeleteTask={handleDeleteTask} 
+                    onUpdateTaskStatus={handleUpdateTaskStatus}
                   />
                 )}
               </div>
@@ -382,11 +383,13 @@ export default function ProjectDetails() {
       />
 
       {editingTask && (
-        <TaskDetailPanel 
+        <EditTaskModal 
           task={editingTask} 
           onClose={() => setEditingTask(null)} 
-          members={members}
-          onUpdateTask={handleUpdateTaskDetails}
+          onUpdate={async (taskId, updates) => {
+            handleUpdateTaskDetails(taskId, updates);
+            return { ...editingTask, ...updates }; // Return updated task
+          }}
         />
       )}
     </div>

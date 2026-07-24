@@ -2,9 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import api from '../../api/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, X, Send, AlertTriangle, Activity, CheckCircle2 } from 'lucide-react';
+import { Sparkles, X, Send, AlertTriangle } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import Avatar from '../shared/Avatar';
 
 const INITIAL_MESSAGES = [
   {

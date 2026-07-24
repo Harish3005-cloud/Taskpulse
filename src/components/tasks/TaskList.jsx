@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import api from '../../api/client';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import TaskRow from './TaskRow';
 import TaskStatusBadge, { formatStatus, STATUS_ORDER } from './TaskStatusBadge';
@@ -21,6 +22,8 @@ export default function TaskList({ workspaceId, onCreateTask }) {
   const { getWorkspaceTasks, activeWorkspace, fetchTasks } = useWorkspace();
   const [activeFilter, setActiveFilter] = useState('active');
   const [collapsedGroups, setCollapsedGroups] = useState(new Set());
+  const [projects, setProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState('all');
 
   // Feature 3: Multi-select state
   const [selectedTaskIds, setSelectedTaskIds] = useState(new Set());
@@ -31,6 +34,27 @@ export default function TaskList({ workspaceId, onCreateTask }) {
 
   const wsId = workspaceId || activeWorkspace?._id;
   const allTasks = getWorkspaceTasks(wsId);
+
+  // Fetch projects
+  useEffect(() => {
+    if (!wsId) return;
+    const fetchProjects = async () => {
+      try {
+        const { data } = await api.get(`/projects?workspaceId=${wsId}`);
+        setProjects(data.projects || []);
+      } catch (err) {
+        console.error('Failed to fetch projects', err);
+      }
+    };
+    fetchProjects();
+  }, [wsId]);
+
+  // When selectedProject changes, fetch filtered tasks
+  useEffect(() => {
+    if (wsId) {
+      fetchTasks(wsId, selectedProject);
+    }
+  }, [wsId, selectedProject, fetchTasks]);
 
   // Filter tasks based on active tab
   const filteredTasks = useMemo(() => {
@@ -122,14 +146,36 @@ export default function TaskList({ workspaceId, onCreateTask }) {
     <>
       {/* Filter Tabs */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--tp-border-subtle)' }}>
-        <FilterBar
-          tabs={FILTER_TABS.map(t => ({
-            ...t,
-            count: t.key === 'all' ? allTasks.length : undefined,
-          }))}
-          activeTab={activeFilter}
-          onChange={setActiveFilter}
-        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <FilterBar
+            tabs={FILTER_TABS.map(t => ({
+              ...t,
+              count: t.key === 'all' ? allTasks.length : undefined,
+            }))}
+            activeTab={activeFilter}
+            onChange={setActiveFilter}
+          />
+          
+          <select 
+            value={selectedProject}
+            onChange={(e) => setSelectedProject(e.target.value)}
+            style={{ 
+              background: 'transparent', 
+              border: '1px solid var(--tp-border-subtle)', 
+              color: 'var(--tp-foreground)',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              fontSize: '13px',
+              outline: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            <option value="all">All Projects</option>
+            {projects.map(p => (
+              <option key={p._id} value={p._id}>{p.name}</option>
+            ))}
+          </select>
+        </div>
         <div className="tp-sub-filter-actions" style={{ paddingRight: 16 }}>
           {/* Filter icon */}
           <button className="tp-icon-btn" title="Filter">

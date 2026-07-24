@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Shield } from 'lucide-react';
 import api from '../../api/client';
-import { cn } from '../../lib/utils';
 
 export default function InviteMemberModal({ isOpen, onClose, projectId, workspaceId, onInviteSuccess }) {
   const [email, setEmail] = useState('');

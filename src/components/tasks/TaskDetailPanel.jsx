@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TaskStatusBadge, { formatStatus } from './TaskStatusBadge';
+import TaskStatusBadge from './TaskStatusBadge';
 import TaskPriorityBadge from './TaskPriorityBadge';
 import Avatar from '../shared/Avatar';
 import CustomMultiSelect from '../shared/CustomMultiSelect';
@@ -140,7 +140,6 @@ export default function TaskDetailPanel({ task, onClose, onUpdateTask, members =
           {/* Description */}
           <textarea 
             className="tp-detail-panel-desc"
-            style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', resize: 'none', minHeight: '60px' }}
             value={localTask.description || ''}
             onChange={(e) => setLocalTask(prev => ({ ...prev, description: e.target.value }))}
             onBlur={(e) => handleUpdate('description', e.target.value)}

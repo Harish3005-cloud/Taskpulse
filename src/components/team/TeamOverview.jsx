@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
-import { Search, Link as LinkIcon, MoreHorizontal, Settings, LayoutGrid, CheckSquare, Layers, Plus, Mail, ShieldAlert, ShieldCheck } from 'lucide-react';
+import { Link as LinkIcon, MoreHorizontal, Settings, LayoutGrid, CheckSquare, Layers, Plus, Mail, ShieldCheck } from 'lucide-react';
 import Avatar from '../shared/Avatar';
 import EmptyState from '../shared/EmptyState';
 import InviteTeamModal from './InviteTeamModal';

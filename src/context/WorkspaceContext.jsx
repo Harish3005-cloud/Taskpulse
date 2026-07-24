@@ -10,7 +10,7 @@ export function WorkspaceProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const triggerRefresh = useCallback(() => {
@@ -46,10 +46,14 @@ export function WorkspaceProvider({ children }) {
     }
   }, []);
 
-  const fetchTasks = useCallback(async (workspaceId) => {
+  const fetchTasks = useCallback(async (workspaceId, projectId = null) => {
     if (!workspaceId) return;
     try {
-      const { data } = await api.get(`/tasks?workspaceId=${workspaceId}`);
+      let url = `/tasks?workspaceId=${workspaceId}`;
+      if (projectId && projectId !== 'all') {
+        url += `&projectId=${projectId}`;
+      }
+      const { data } = await api.get(url);
       setTasks(data.tasks || []);
     } catch (error) {
       console.error('Failed to fetch tasks:', error);

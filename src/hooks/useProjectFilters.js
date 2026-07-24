@@ -8,6 +8,7 @@ export function useProjectFilters(workspaceId, projectId, viewId) {
   const { refreshTrigger } = useWorkspace();
   const [filters, setFilters] = useState({
     status: 'all',
+    project: 'any',
     priority: 'any',
     category: 'any',
     assignee: 'any',
@@ -24,20 +25,28 @@ export function useProjectFilters(workspaceId, projectId, viewId) {
 
   const debouncedFilters = useDebounce(filters, 200);
 
-  // Fetch members
+  const [projects, setProjects] = useState([]);
+
+  // Fetch members and projects
   useEffect(() => {
     if (!workspaceId) return;
-    const fetchMembers = async () => {
+    const fetchWorkspaceData = async () => {
       try {
-        const res = await api.get(`/workspaces/${workspaceId}/members`);
-        if (res?.data?.members) {
-          setMembers(res.data.members);
+        const [membersRes, projectsRes] = await Promise.all([
+          api.get(`/workspaces/${workspaceId}/members`),
+          api.get(`/projects?workspaceId=${workspaceId}`)
+        ]);
+        if (membersRes?.data?.members) {
+          setMembers(membersRes.data.members);
+        }
+        if (projectsRes?.data?.projects) {
+          setProjects(projectsRes.data.projects);
         }
       } catch (err) {
-        console.error('Failed to fetch members:', err);
+        console.error('Failed to fetch workspace data:', err);
       }
     };
-    fetchMembers();
+    fetchWorkspaceData();
   }, [workspaceId]);
 
   // Fetch View Filters if viewId is present
@@ -61,6 +70,7 @@ export function useProjectFilters(workspaceId, projectId, viewId) {
       };
 
       if (projectId) params.projectId = projectId;
+      else if (debouncedFilters.project !== 'any') params.projectId = debouncedFilters.project;
 
       if (debouncedFilters.status !== 'all') params.status = debouncedFilters.status;
       if (debouncedFilters.priority !== 'any') params.priority = debouncedFilters.priority;
@@ -103,6 +113,7 @@ export function useProjectFilters(workspaceId, projectId, viewId) {
   const resetFilters = () => {
     setFilters({
       status: 'all',
+      project: 'any',
       priority: 'any',
       category: 'any',
       assignee: 'any',
@@ -118,6 +129,7 @@ export function useProjectFilters(workspaceId, projectId, viewId) {
     tasks,
     setTasks, // useful for optimistic updates
     members,
+    projects,
     loading,
     total,
     hasMore: tasks.length < total,

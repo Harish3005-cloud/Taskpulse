@@ -152,7 +152,7 @@ export default function CommandCenter() {
         </motion.div>
 
         {/* AI Focus Panel */}
-        <motion.div variants={fadeUpItem} className="tp-ai-border tp-ai-glow relative overflow-hidden rounded-xl bg-tp-surface p-6 shadow-tp-md">
+        <motion.div variants={fadeUpItem} className="relative overflow-hidden rounded-xl bg-tp-surface p-6 shadow-tp-md">
           <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-ai-gradient opacity-10 blur-3xl pointer-events-none" />
           
           <div className="flex items-center gap-2 mb-4 relative z-10">

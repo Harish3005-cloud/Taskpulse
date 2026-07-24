@@ -12,6 +12,7 @@
   "dependencies": {
     "@base-ui/react": "^1.5.0",
     "@fontsource-variable/geist": "^5.2.9",
+    "@fontsource-variable/outfit": "^5.2.8",
     "@hello-pangea/dnd": "^18.0.1",
     "axios": "^1.18.0",
     "class-variance-authority": "^0.7.1",
@@ -25,7 +26,7 @@
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.18.0",
     "recharts": "^3.9.2",
-    "shadcn": "^4.11.0",
+    "shadcn": "^3.8.3",
     "socket.io-client": "^4.8.3",
     "tailwind-merge": "^3.6.0",
     "tailwindcss-animate": "^1.0.7",

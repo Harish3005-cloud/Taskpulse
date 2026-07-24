@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import api from '../../api/client';
 import { motion } from 'framer-motion';
-import { Sparkles, Send, AlertTriangle, ArrowRight, Lightbulb, TrendingUp, ShieldAlert } from 'lucide-react';
+import { Sparkles, AlertTriangle, ArrowRight, Lightbulb, TrendingUp, ShieldAlert } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import Avatar from '../shared/Avatar';
 

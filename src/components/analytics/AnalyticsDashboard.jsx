@@ -3,15 +3,13 @@ import { useWorkspace } from '../../context/WorkspaceContext';
 import api from '../../api/client';
 import { motion } from 'framer-motion';
 import { 
-  TrendingUp, Activity, CheckCircle2, AlertCircle, 
-  Sparkles, Calendar, BarChart3, PieChart 
+  Activity, CheckCircle2, AlertCircle, 
+  Sparkles, BarChart3, PieChart 
 } from 'lucide-react';
-import Avatar from '../shared/Avatar';
 import { 
   LineChart, Line, BarChart, Bar, XAxis, YAxis, 
   CartesianGrid, Tooltip, ResponsiveContainer, Cell
 } from 'recharts';
-import { cn } from '../../lib/utils';
 import { format } from 'date-fns';
 
 const staggerContainer = {

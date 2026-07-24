@@ -14,8 +14,7 @@ import {
   CommandItem,
   CommandSeparator,
 } from '../ui/command';
-import { Badge } from '../ui/badge';
-import { Loader2, Clock, Search, User } from 'lucide-react';
+import { Loader2, Clock, Search } from 'lucide-react';
 import Avatar from '../shared/Avatar';
 
 /* ── Constants ─────────────────────────────────────────────────────────── */

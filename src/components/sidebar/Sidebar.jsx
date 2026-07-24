@@ -17,15 +17,11 @@ import {
   Activity,
   Settings,
   HelpCircle,
-  Plus,
-  ChevronDown,
-  ChevronRight,
   PanelLeft,
   X,
-  Search,
 } from 'lucide-react';
 
-const TEAM_COLORS = [
+const _TEAM_COLORS = [
   'linear-gradient(135deg, #ef4444, #f97316)',
   'linear-gradient(135deg, #6366f1, #8b5cf6)',
   'linear-gradient(135deg, #22c55e, #10b981)',
@@ -33,16 +29,16 @@ const TEAM_COLORS = [
   'linear-gradient(135deg, #ec4899, #f43f5e)',
 ];
 
-export default function Sidebar({ onCreateTask, onCreateProject, onCreateView, isMobileOpen, setMobileOpen }) {
-  const navigate = useNavigate();
-  const location = useLocation();
+export default function Sidebar({ onCreateTask: _onCreateTask, onCreateProject: _onCreateProject, onCreateView: _onCreateView, isMobileOpen, setMobileOpen }) {
+  const _navigate = useNavigate();
+  const _location = useLocation();
   const { activeWorkspace, unreadCount, sidebarCollapsed, toggleSidebar } = useWorkspace();
-  const { open: openCommandPalette } = useCommandPalette();
-  const [expandedSections, setExpandedSections] = useState({ workspace: true, projects: true, views: true, try: true });
+  const { open: _openCommandPalette } = useCommandPalette();
+  const [_expandedSections, _setExpandedSections] = useState({ workspace: true, projects: true, views: true, try: true });
 
-  const [projects, setProjects] = useState([]);
+  const [_projects, setProjects] = useState([]);
   const [sharedProjects, setSharedProjects] = useState([]);
-  const [views, setViews] = useState([]);
+  const [_views, setViews] = useState([]);
   
   // Mobile only state
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -68,8 +64,8 @@ export default function Sidebar({ onCreateTask, onCreateProject, onCreateView, i
     fetchWorkspaceData();
   }, [activeWorkspace]);
 
-  const toggleSection = (section) => {
-    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  const _toggleSection = (section) => {
+    _setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { 
   Table, 
   TableBody, 
@@ -14,14 +14,26 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from '../ui/dropdown-menu';
-import { Button } from '../ui/button';
+import { Button, buttonVariants } from '../ui/button';
 import { MoreHorizontal, ArrowUpDown, Trash2, Edit } from 'lucide-react';
 import { format } from 'date-fns';
 
-export function ListView({ tasks, onEditTask, onDeleteTask }) {
+function SortableHeader({ columnKey, sortConfig, onSort, children }) {
+  return (
+    <div 
+      className="flex items-center gap-1 cursor-pointer hover:text-foreground"
+      onClick={() => onSort(columnKey)}
+    >
+      {children}
+      <ArrowUpDown size={12} className={sortConfig.key === columnKey ? "opacity-100" : "opacity-30"} />
+    </div>
+  );
+}
+
+export function ListView({ tasks, onEditTask, onDeleteTask, onUpdateTaskStatus }) {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
-  const sortedTasks = React.useMemo(() => {
+  const sortedTasks = useMemo(() => {
     let sortableTasks = [...tasks];
     if (sortConfig.key !== null) {
       sortableTasks.sort((a, b) => {
@@ -35,6 +47,9 @@ export function ListView({ tasks, onEditTask, onDeleteTask }) {
         } else if (sortConfig.key === 'category') {
           aValue = a.ai?.category || '';
           bValue = b.ai?.category || '';
+        } else if (sortConfig.key === 'project') {
+          aValue = a.projectId?.name || '';
+          bValue = b.projectId?.name || '';
         }
 
         if (aValue < bValue) {
@@ -63,15 +78,6 @@ export function ListView({ tasks, onEditTask, onDeleteTask }) {
     return 'text-blue-600 dark:text-blue-400 font-medium';
   };
 
-  const SortableHeader = ({ columnKey, children }) => (
-    <div 
-      className="flex items-center gap-1 cursor-pointer hover:text-foreground"
-      onClick={() => requestSort(columnKey)}
-    >
-      {children}
-      <ArrowUpDown size={12} className={sortConfig.key === columnKey ? "opacity-100" : "opacity-30"} />
-    </div>
-  );
 
   return (
     <div className="rounded-md border bg-card">
@@ -79,21 +85,34 @@ export function ListView({ tasks, onEditTask, onDeleteTask }) {
         <TableHeader>
           <TableRow>
             <TableHead className="w-12 text-center">
-              <Checkbox />
+              <Checkbox 
+                checked={sortedTasks.length > 0 && sortedTasks.every(t => t.status === 'done')}
+                onCheckedChange={(checked) => {
+                  if (onUpdateTaskStatus) {
+                    const newStatus = checked ? 'done' : 'todo';
+                    sortedTasks.forEach(task => {
+                      if (task.status !== newStatus) {
+                        onUpdateTaskStatus(task._id || task.id, newStatus);
+                      }
+                    });
+                  }
+                }}
+              />
             </TableHead>
-            <TableHead><SortableHeader columnKey="title">Title</SortableHeader></TableHead>
-            <TableHead><SortableHeader columnKey="status">Status</SortableHeader></TableHead>
-            <TableHead><SortableHeader columnKey="priority">Priority</SortableHeader></TableHead>
-            <TableHead><SortableHeader columnKey="category">Category</SortableHeader></TableHead>
-            <TableHead><SortableHeader columnKey="assignee">Assignee</SortableHeader></TableHead>
-            <TableHead><SortableHeader columnKey="dueDate">Due Date</SortableHeader></TableHead>
+          <TableHead><SortableHeader columnKey="title" sortConfig={sortConfig} onSort={requestSort}>Title</SortableHeader></TableHead>
+            <TableHead><SortableHeader columnKey="project" sortConfig={sortConfig} onSort={requestSort}>Project</SortableHeader></TableHead>
+            <TableHead><SortableHeader columnKey="status" sortConfig={sortConfig} onSort={requestSort}>Status</SortableHeader></TableHead>
+            <TableHead><SortableHeader columnKey="priority" sortConfig={sortConfig} onSort={requestSort}>Priority</SortableHeader></TableHead>
+            <TableHead><SortableHeader columnKey="category" sortConfig={sortConfig} onSort={requestSort}>Category</SortableHeader></TableHead>
+            <TableHead><SortableHeader columnKey="assignee" sortConfig={sortConfig} onSort={requestSort}>Assignee</SortableHeader></TableHead>
+            <TableHead><SortableHeader columnKey="dueDate" sortConfig={sortConfig} onSort={requestSort}>Due Date</SortableHeader></TableHead>
             <TableHead className="w-16 text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {sortedTasks.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="h-24 text-center">
+              <TableCell colSpan={9} className="h-24 text-center">
                 No results.
               </TableCell>
             </TableRow>
@@ -101,10 +120,26 @@ export function ListView({ tasks, onEditTask, onDeleteTask }) {
             sortedTasks.map(task => (
               <TableRow key={task._id || task.id}>
                 <TableCell className="text-center">
-                  <Checkbox />
+                  <Checkbox 
+                    checked={task.status === 'done'}
+                    onCheckedChange={(checked) => {
+                      if (onUpdateTaskStatus) {
+                        onUpdateTaskStatus(task._id || task.id, checked ? 'done' : 'todo');
+                      }
+                    }}
+                  />
                 </TableCell>
                 <TableCell className="font-medium">
                   {task.title}
+                </TableCell>
+                <TableCell>
+                  {task.projectId?.name ? (
+                    <span className="text-xs px-2 py-1 rounded-full bg-secondary text-secondary-foreground whitespace-nowrap">
+                      {task.projectId.name}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">-</span>
+                  )}
                 </TableCell>
                 <TableCell>
                   <span className="capitalize text-xs px-2 py-1 rounded-full bg-secondary text-secondary-foreground">
@@ -140,11 +175,9 @@ export function ListView({ tasks, onEditTask, onDeleteTask }) {
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
+                    <DropdownMenuTrigger className={buttonVariants({ variant: 'ghost', size: 'icon' })}>
+                      <span className="sr-only">Open menu</span>
+                      <MoreHorizontal className="h-4 w-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => onEditTask(task._id || task.id)}>

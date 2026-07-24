@@ -14,8 +14,26 @@ export default defineConfig([
       reactRefresh.configs.vite,
     ],
     languageOptions: {
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        React: 'readonly',
+      },
       parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+    rules: {
+      // Allow unused vars starting with underscore, and allow React (handled by JSX transform)
+      'no-unused-vars': ['error', {
+        varsIgnorePattern: '^(_|React$)',
+        argsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      }],
+      // Downgrade set-state-in-effect to a warning — many existing patterns are intentional initializations
+      'react-hooks/set-state-in-effect': 'warn',
+      // Allow context/hook files to export both provider and hook from the same file
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     },
   },
 ])
+
+
+

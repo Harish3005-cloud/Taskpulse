@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
   Select, 
   SelectContent, 
@@ -6,17 +5,34 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '../ui/select';
-import { Button, buttonVariants } from '../ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Calendar } from '../ui/calendar';
-import { format } from 'date-fns';
-import { Calendar as CalendarIcon, X } from 'lucide-react';
+import { Button } from '../ui/button';
+import { X } from 'lucide-react';
 
-export function ProjectFilterBar({ filters, updateFilter, resetFilters, members = [] }) {
+export function ProjectFilterBar({ filters, updateFilter, resetFilters, members = [], projects = [], isProjectView = false }) {
   const hasActiveFilters = Object.values(filters).some(val => val !== 'all' && val !== 'any' && val !== null);
 
   return (
-    <div className="tp-projects-filters">
+    <div className="tp-projects-filters flex flex-wrap gap-4 items-end">
+      {/* Project Filter (only show if not inside a specific project) */}
+      {!isProjectView && (
+        <div className="flex flex-col gap-1.5 w-40">
+          <label className="text-xs font-medium text-muted-foreground">Project</label>
+          <Select value={filters.project} onValueChange={(val) => updateFilter('project', val)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Project" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any">All Projects</SelectItem>
+              {projects.map(p => (
+                <SelectItem key={p._id || p.id} value={p._id || p.id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       {/* Status Filter */}
       <div className="flex flex-col gap-1.5 w-40">
         <label className="text-xs font-medium text-muted-foreground">Status</label>

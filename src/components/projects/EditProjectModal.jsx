@@ -4,7 +4,6 @@ import api from '../../api/client';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import CustomMultiSelect from '../shared/CustomMultiSelect';
-import { cn } from '../../lib/utils';
 
 export default function EditProjectModal({ project, onClose, onSubmit }) {
   const { activeWorkspace } = useWorkspace();
@@ -15,7 +14,7 @@ export default function EditProjectModal({ project, onClose, onSubmit }) {
     if (!dateString) return '';
     try {
       return new Date(dateString).toISOString().split('T')[0];
-    } catch (e) {
+    } catch (_e) {
       return '';
     }
   };

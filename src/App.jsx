@@ -19,7 +19,6 @@ import MyTasks from "./components/tasks/MyTasks";
 import TaskBoard from "./components/projects/TaskBoard";
 import ViewsPage from "./components/views/ViewsPage";
 import AnalyticsDashboard from "./components/analytics/AnalyticsDashboard";
-import TeamTasksView from "./components/tasks/TeamTasksView";
 import TaskDetail from "./components/tasks/TaskDetail";
 import SettingsPage from "./components/settings/SettingsPage";
 import TeamOverview from "./components/team/TeamOverview";

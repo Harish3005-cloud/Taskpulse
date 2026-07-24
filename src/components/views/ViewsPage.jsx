@@ -19,7 +19,7 @@ const VIEW_TABS = [
 export default function ViewsPage() {
   const { teamSlug } = useParams();
   const navigate = useNavigate();
-  const { workspaces, activeWorkspace, setActiveWorkspace, savedViews = [], deleteView } = useWorkspace();
+  const { workspaces, activeWorkspace, setActiveWorkspace, savedViews = [], deleteView: _deleteView } = useWorkspace();
   const [activeTab, setActiveTab] = useState('member-workload');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [tasks, setTasks] = useState([]);
@@ -66,11 +66,11 @@ export default function ViewsPage() {
     return Object.values(stats);
   }, [tasks, activeWorkspace]);
 
-  const filteredViews = savedViews.filter(v =>
+  const _filteredViews = savedViews.filter(v =>
     activeTab === 'issues' ? v.type !== 'projects' : v.type === 'projects'
   );
 
-  const formatFilters = (view) => {
+  const _formatFilters = (view) => {
     const parts = [];
     if (view.filters?.status?.length) parts.push(`Status: ${view.filters.status.join(', ')}`);
     if (view.filters?.priority?.length) parts.push(`Priority: ${view.filters.priority.join(', ')}`);

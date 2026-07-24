@@ -12,7 +12,6 @@ import {
   TrendingUp,
   CalendarClock,
   MessageSquare,
-  Check,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import "./LandingPage.css";
@@ -76,7 +75,7 @@ function Hero() {
           {/* Headline */}
           <motion.h1
             variants={fadeUpItem}
-            className="mt-6 text-balance text-5xl font-semibold leading-[1.05] tracking-tight text-tp-foreground sm:text-6xl lg:text-7xl"
+            className="mt-6 font-heading text-balance text-5xl font-bold leading-[1.05] tracking-tight text-tp-foreground sm:text-6xl lg:text-7xl"
           >
             Task management that
             <br className="hidden sm:block" /> thinks{" "}
@@ -206,7 +205,7 @@ function FeatureBento() {
     <section id="features" className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl text-center">
         <p className="text-sm font-semibold text-tp-accent">Built for velocity</p>
-        <h2 className="mt-3 text-balance text-3xl font-semibold tracking-tight text-tp-foreground sm:text-4xl">
+        <h2 className="mt-3 text-balance font-heading text-3xl font-bold tracking-tight text-tp-foreground sm:text-4xl">
           Everything your team needs, nothing it doesn&apos;t
         </h2>
         <p className="mt-4 text-pretty text-lg leading-relaxed text-tp-muted">
@@ -281,7 +280,7 @@ function AIShowcase() {
             <Sparkles className="h-3.5 w-3.5 text-tp-text" />
             <span className="text-tp-text">TaskPulse Intelligence</span>
           </span>
-          <h2 className="mt-5 text-balance text-3xl font-semibold tracking-tight text-tp-foreground sm:text-4xl">
+          <h2 className="mt-5 text-balance font-heading text-3xl font-bold tracking-tight text-tp-foreground sm:text-4xl">
             The layer that decides{" "}
             <span className="bg-gradient-to-br from-white to-neutral-500 bg-clip-text text-transparent">what matters next</span>
           </h2>
@@ -396,7 +395,7 @@ function HowItWorks() {
       <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold text-tp-accent">How it works</p>
-          <h2 className="mt-3 text-balance text-3xl font-semibold tracking-tight text-tp-foreground sm:text-4xl">
+          <h2 className="mt-3 text-balance font-heading text-3xl font-bold tracking-tight text-tp-foreground sm:text-4xl">
             From zero to in-flow in three steps
           </h2>
         </div>
@@ -461,7 +460,7 @@ function Testimonials() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl text-center">
-        <h2 className="text-balance text-3xl font-semibold tracking-tight text-tp-foreground sm:text-4xl">
+        <h2 className="text-balance font-heading text-3xl font-bold tracking-tight text-tp-foreground sm:text-4xl">
           Teams move faster with TaskPulse
         </h2>
       </div>
@@ -521,7 +520,7 @@ function CTA() {
           style={{ background: "var(--tp-ai-gradient)" }}
         />
         <div className="relative">
-          <h2 className="mx-auto max-w-2xl text-balance text-3xl font-semibold tracking-tight text-tp-foreground sm:text-4xl">
+          <h2 className="mx-auto max-w-2xl text-balance font-heading text-3xl font-bold tracking-tight text-tp-foreground sm:text-4xl">
             Give your team an unfair advantage
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-pretty text-lg leading-relaxed text-tp-muted">

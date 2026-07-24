@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+import tailwindcssAnimate from 'tailwindcss-animate';
+
 export default {
   darkMode: ["class"],
   content: [
@@ -113,6 +115,7 @@ export default {
           "system-ui",
           "sans-serif",
         ],
+        heading: ["Outfit Variable", "sans-serif"],
         mono: ["Geist Mono Variable", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       borderRadius: {
@@ -150,5 +153,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 }

@@ -27,13 +27,13 @@ export default function DashboardLayout() {
   // Theme state for toggle
   const [isDark, setIsDark] = useState(true);
 
-  const { activeWorkspace, fetchTasks, fetchWorkspaces, loading, getTaskById, sidebarCollapsed, toggleSidebar, triggerRefresh } = useWorkspace();
+  const { activeWorkspace, fetchTasks, loading, getTaskById, sidebarCollapsed, toggleSidebar, triggerRefresh } = useWorkspace();
   const { open: openCommandPalette } = useCommandPalette();
   const location = useLocation();
 
   useEffect(() => {
-    const isDarkMode = document.documentElement.classList.contains('dark');
-    setIsDark(isDarkMode);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsDark(document.documentElement.classList.contains('dark'));
   }, []);
 
   const toggleTheme = () => {

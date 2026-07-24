@@ -6,7 +6,7 @@ import { KanbanView } from './KanbanView';
 import { ListView } from './ListView';
 import { LayoutGrid, List } from 'lucide-react';
 import { Button } from '../ui/button';
-import TaskDetailPanel from '../tasks/TaskDetailPanel';
+import EditTaskModal from '../tasks/EditTaskModal';
 import { useParams } from 'react-router-dom';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import api from '../../api/client';
@@ -35,6 +35,7 @@ export default function TaskBoard() {
     tasks,
     setTasks,
     members,
+    projects,
     loading,
     hasMore,
     loadMore,
@@ -121,6 +122,8 @@ export default function TaskBoard() {
         updateFilter={updateFilter} 
         resetFilters={resetFilters} 
         members={members} 
+        projects={projects}
+        isProjectView={!!projectId}
       />
       
       <ProjectFilterChips 
@@ -147,6 +150,7 @@ export default function TaskBoard() {
                 tasks={tasks} 
                 onEditTask={handleEditTask} 
                 onDeleteTask={handleDeleteTask} 
+                onUpdateTaskStatus={handleUpdateTaskStatus}
               />
             )}
 
@@ -167,11 +171,13 @@ export default function TaskBoard() {
       </div>
 
       {editingTask && (
-        <TaskDetailPanel 
+        <EditTaskModal 
           task={editingTask} 
           onClose={() => setEditingTask(null)} 
-          members={members}
-          onUpdateTask={handleUpdateTaskDetails}
+          onUpdate={async (taskId, updates) => {
+            handleUpdateTaskDetails(taskId, updates);
+            return { ...editingTask, ...updates }; // Return updated task
+          }}
         />
       )}
     </div>

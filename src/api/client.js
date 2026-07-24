@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://taskpulseserverdesign-production.up.railway.app/api/v1',
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true, // Send cookies with requests
   headers: {
     'Content-Type': 'application/json'

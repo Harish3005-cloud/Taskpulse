@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
@@ -28,15 +28,7 @@ export default function InvitePage() {
     fetchInvite();
   }, [token]);
 
-  // Auto-accept invite when user is already authenticated
-  useEffect(() => {
-    if (!authLoading && isAuthenticated && invite && !autoAcceptAttempted.current && !accepting) {
-      autoAcceptAttempted.current = true;
-      handleAccept();
-    }
-  }, [isAuthenticated, authLoading, invite]);
-
-  const handleAccept = async () => {
+  const handleAccept = useCallback(async () => {
     setAccepting(true);
     try {
       const { data } = await api.post(`/invites/${token}/accept`);
@@ -45,7 +37,16 @@ export default function InvitePage() {
       setError(err.response?.data?.error?.message || 'Failed to accept invitation.');
       setAccepting(false);
     }
-  };
+  }, [token, navigate]);
+
+  // Auto-accept invite when user is already authenticated
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && invite && !autoAcceptAttempted.current && !accepting) {
+      autoAcceptAttempted.current = true;
+      handleAccept();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, authLoading, invite, handleAccept]);
 
   const handleContinueToSignup = () => {
     sessionStorage.setItem('tp-invite-token', token);

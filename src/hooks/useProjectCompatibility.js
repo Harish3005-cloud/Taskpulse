@@ -7,7 +7,7 @@ import { useWorkspace } from '../context/WorkspaceContext';
  * Maps Workspace metadata to a default Project when Project APIs are empty or incomplete.
  */
 export function useProjectCompatibility() {
-  const { activeWorkspace, workspaces, refreshTrigger } = useWorkspace();
+  const { activeWorkspace, refreshTrigger } = useWorkspace();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 

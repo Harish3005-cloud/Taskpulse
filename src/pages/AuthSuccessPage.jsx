@@ -52,7 +52,8 @@ export default function AuthSuccessPage() {
     } else {
         setErrorMsg('Missing token or user data in URL.');
     }
-  }, [searchParams]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, handleOAuthSuccess]);
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#000000] text-white px-6">
